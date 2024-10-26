@@ -3,6 +3,7 @@ services:
     build:
       context: ..
       dockerfile: docker/base.Dockerfile
+    container_name: dev_container
     networks:
       - dev_network
     command: sleep infinity
