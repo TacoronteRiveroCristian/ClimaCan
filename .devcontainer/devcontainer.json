@@ -3,7 +3,7 @@
     "remoteUser": "dev_container",
     "initializeCommand": "docker pull cristiantr/dev_container_image",
     "dockerComposeFile": "../docker/docker-compose.yaml",
-    "service": "dev_container",
+    "service": "climacan-dev",
     "workspaceFolder": "/workspaces/ClimaCan",
     "customizations": {
         "vscode": {
