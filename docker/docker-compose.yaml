@@ -1,0 +1,39 @@
+services:
+  dev_container:
+    build:
+      context: ..
+      dockerfile: docker/base.Dockerfile
+    networks:
+      - dev_network
+    command: sleep infinity
+
+  ClimaCan-influxdb:
+    image: influxdb:1.8
+    container_name: ClimaCan-influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./volumes/influxdb/data:/var/lib/influxdb
+      - ./volumes/influxdb/db:/var/lib/influxdb/backup
+    environment:
+      - TZ=Atlantic/Canary
+    networks:
+      - dev_network
+    restart: unless-stopped
+
+  ClimaCan-grafana:
+    image: grafana/grafana
+    container_name: ClimaCan-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - dev_network
+    environment:
+      - TZ=Atlantic/Canary
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_PATHS_LOGS=/var/log/grafana
+    restart: unless-stopped
+
+networks:
+  dev_network:
+    driver: bridge
