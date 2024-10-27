@@ -6,6 +6,8 @@ services:
     container_name: climacan-dev
     networks:
       - dev_network
+    env_file:
+      - ../.env
     command: sleep infinity
 
   climacan-influxdb:
