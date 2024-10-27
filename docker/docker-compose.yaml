@@ -20,6 +20,8 @@ services:
       - TZ=Atlantic/Canary
     networks:
       - dev_network
+    depends_on:
+      - climacan-dev
     restart: unless-stopped
 
   climacan-grafana:
@@ -33,6 +35,8 @@ services:
       - TZ=Atlantic/Canary
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_PATHS_LOGS=/var/log/grafana
+    depends_on:
+      - climacan-dev
     restart: unless-stopped
 
 networks:

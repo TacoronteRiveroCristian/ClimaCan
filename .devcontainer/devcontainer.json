@@ -5,7 +5,9 @@
     "dockerComposeFile": "../docker/docker-compose.yaml",
     "service": "climacan-dev",
     "workspaceFolder": "/workspaces/ClimaCan",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/ClimaCan,type=bind",
+    "mounts": [
+        "source=/home/cristian/GitHub/ClimaCan,target=/workspaces/ClimaCan,type=bind"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
