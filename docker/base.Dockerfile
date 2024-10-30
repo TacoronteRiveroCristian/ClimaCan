@@ -11,4 +11,10 @@ WORKDIR /workspaces/ClimaCan
 # Copiar archivos en el directorio de trabajo
 COPY . .
 
+# Instalar dependencias
+RUN pip install -r requirements.txt
+
+# Definir el directorio del proyecto como variable de entorno
+ENV ROOT_PROJECT=/workspaces/ClimaCan
+
 CMD ["/bin/bash"]
