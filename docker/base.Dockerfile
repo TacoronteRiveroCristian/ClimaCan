@@ -18,7 +18,7 @@ ENV PYTHONPATH="${WORKSPACES}:${PYTHONPATH}"
 ENV GRAFCAN_TOKEN=${GRAFCAN_TOKEN}
 
 # Establecer directorio de trabajo
-WORKDIR /workspaces/ClimaCan
+WORKDIR ${WORKSPACES}
 
 # Copiar archivos en el directorio de trabajo
 COPY . .
