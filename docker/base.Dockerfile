@@ -1,19 +1,19 @@
 FROM cristiantr/dev_container_image:latest
 
-# Agregar credenciales de GH al contenedor
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
+ARG GITHUB_GMAIL
+ARG GRAFCAN_TOKEN
+ARG WORKDIR="/workspaces/ClimaCan"
 
-# Agregar credenciales de GH al contenedor
+# Configurar credenciales de GitHub (uso con precaución)
 RUN git config --global credential.helper 'store' && \
-    echo "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
-
-# Configurar el usuario y el correo de Git globalmente
-RUN git config --global user.name "Your Name" && \
-    git config --global user.email "your.email@example.com"
+    echo "https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials && \
+    git config --global user.name "${GITHUB_USERNAME}" && \
+    git config --global user.email "${GITHUB_GMAIL}"
 
 # Establecer directorio de trabajo
-WORKDIR /workspaces/ClimaCan
+WORKDIR ${WORKDIR}
 
 # Copiar archivos en el directorio de trabajo
 COPY . .
@@ -21,13 +21,10 @@ COPY . .
 # Instalar dependencias
 RUN pip install -r requirements.txt
 
-# Añadir el directorio de trabajo al PYTHONPATH
-ENV PYTHONPATH="/workspaces/ClimaCan:${PYTHONPATH}"
+# Establecer variables de entorno
+ENV WORKDIR=${WORKDIR}
+ENV GRAFCAN_TOKEN=${GRAFCAN_TOKEN}
+ENV PYTHONPATH=${PYTHONPATH}:${WORKDIR}
 
-# Definir el directorio del proyecto como variable de entorno
-ENV ROOT_PROJECT=/workspaces/ClimaCan
-
-# Instalar pre-commit
-RUN pre-commit install
-
+# Comando de arranque
 CMD ["/bin/bash"]

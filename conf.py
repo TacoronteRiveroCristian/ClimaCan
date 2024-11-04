@@ -6,7 +6,7 @@ from pathlib import Path
 
 # Variables de entorno
 GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
-WORKING_DIR = Path(os.getenv("ROOT_PROJECT", "/workspaces/ClimaCan"))
+WORKING_DIR = Path(os.getenv("WORKDIR"))
 
 # Parametros API KEY
 HEADERS = {"accept": "application/json", "Authorization": f"Api-Key {GRAFCAN_TOKEN}"}

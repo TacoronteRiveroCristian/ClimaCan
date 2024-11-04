@@ -6,7 +6,7 @@
     "service": "climacan-dev",
     "workspaceFolder": "/workspaces/ClimaCan",
     "mounts": [
-        "source=/home/cristian/GitHub/ClimaCan,target=/workspaces/ClimaCan,type=bind"
+        "source=${localWorkspaceFolder},target=/workspaces/ClimaCan,type=bind"
     ],
     "customizations": {
         "vscode": {
