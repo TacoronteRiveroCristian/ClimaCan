@@ -12,7 +12,11 @@ WORKING_DIR = Path(os.getenv("ROOT_PROJECT", "/workspaces/ClimaCan"))
 HEADERS = {"accept": "application/json", "Authorization": f"Api-Key {GRAFCAN_TOKEN}"}
 
 # Parametros Grafcan
-GRAFCAN__LOF_FILE_GET_URLS_OF_STATIONS = "src/grafcan/log/get_urls_of_stations.log"
-GRAFCAN__LOF_FILE_GET_LOCATIONS_OF_STATIONS = (
-    "src/grafcan/log/get_locations_of_stations.log"
+GRAFCAN__CSV_FILE_GET_URLS_OF_STATIONS = "src/grafcan/data/get_urls_of_stations.csv"
+GRAFCAN__LOG_FILE_GET_URLS_OF_STATIONS = "src/grafcan/logs/get_urls_of_stations.log"
+GRAFCAN__CSV_FILE_GET_LOCATIONS_OF_STATIONS = (
+    "src/grafcan/data/get_locations_of_stations.csv"
+)
+GRAFCAN__LOG_FILE_GET_LOCATIONS_OF_STATIONS = (
+    "src/grafcan/logs/get_locations_of_stations.log"
 )

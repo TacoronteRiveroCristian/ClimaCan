@@ -6,23 +6,25 @@ correspondientes a la API Grafcan y guardarlos en un archivo CSV.
 from typing import List, Optional
 
 import pandas as pd
+import requests
 from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 
-from conf import GRAFCAN__LOF_FILE_GET_URLS_OF_STATIONS, HEADERS, WORKING_DIR
-from src.grafcan.classes.GrafcanUtils import GrafcanUtils
+from conf import (
+    GRAFCAN__CSV_FILE_GET_URLS_OF_STATIONS,
+    GRAFCAN__LOG_FILE_GET_URLS_OF_STATIONS,
+    HEADERS,
+    WORKING_DIR,
+)
 
 # Configuración de logger y manejo de errores
-log_file = WORKING_DIR / GRAFCAN__LOF_FILE_GET_URLS_OF_STATIONS
+log_file = WORKING_DIR / GRAFCAN__LOG_FILE_GET_URLS_OF_STATIONS
 logging_handler = LoggingHandler(log_file=log_file)
 logger = logging_handler.get_logger
 error_handler = ErrorHandler()
 
 # URL de la API
 url = "https://sensores.grafcan.es/api/v1.0/things/"
-
-# Instanciar la clase GrafcanUtils
-grafcan_utils = GrafcanUtils()
 
 
 def fetch_station_data(url: str, headers: dict, logger) -> List:
@@ -38,7 +40,7 @@ def fetch_station_data(url: str, headers: dict, logger) -> List:
     :param logger: Instancia del logger para registrar mensajes y errores.
     :return: Lista de estaciones en formato JSON, si se obtienen con éxito.
     """
-    stations = grafcan_utils.fetch_station_data(url, headers, logger)
+    stations = requests.get(url, headers=headers, timeout=50).json().get("results", [])
     if len(stations) == 0:
         error_handler.handle_error(
             message="No se han encontrado estaciones", logger=logger
@@ -57,10 +59,12 @@ def save_to_csv(df: pd.DataFrame, logger) -> None:
     :param df: DataFrame con los datos de estaciones.
     :param logger: Instancia del logger para registrar eventos.
     """
-    output_file = WORKING_DIR / "src/grafcan/data/stations/url_of_stations.csv"
+    output_file = WORKING_DIR / GRAFCAN__CSV_FILE_GET_URLS_OF_STATIONS
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
     # Almacenar los datos en el archivo .csv
-    grafcan_utils.save_stations_to_csv(df, output_file, logger)
-    logger.info("Archivo guardado con éxito en la ubicación especificada\n")
+    df.to_csv(output_file)
+    logger.info(f"Archivo guardado con éxito en la ubicación {output_file}.\n")
 
 
 def parse_station_data(stations: List, logger) -> Optional[pd.DataFrame]:
