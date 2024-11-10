@@ -11,9 +11,9 @@ from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 from requests import get
 
-from conf import GRAFCAN__CSV_FILE_METADATA_STATIONS as CSV_FILE
-from conf import GRAFCAN__LOG_FILE_METADATA_STATIONS as LOG_FILE
-from conf import HEADER_API_KEY, TIMEOUT, WORKING_DIR
+from conf import GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS as CSV_FILE
+from conf import GRAFCAN__LOG_FILE_CLASSES_METADATA_STATIONS as LOG_FILE
+from conf import HEADER_API_KEY, TIMEOUT
 
 
 class StationMetadataFetcher:
@@ -26,8 +26,8 @@ class StationMetadataFetcher:
         Constructor de la clase.
         """
         self.url = "https://sensores.grafcan.es/api/v1.0/things/"
-        self.output_file = WORKING_DIR / CSV_FILE
-        self.logger = LoggingHandler(log_file=WORKING_DIR / LOG_FILE).get_logger
+        self.output_file = CSV_FILE
+        self.logger = LoggingHandler(log_file=LOG_FILE).get_logger
         self.error_handler = ErrorHandler()
 
     def _remove_special_characters(self, text: str) -> str:

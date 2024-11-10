@@ -10,8 +10,8 @@ from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 from requests import get
 
-from conf import GRAFCAN__LOG_FILE_OBSERVATIONS_LAST as LOG_FILE
-from conf import HEADER_API_KEY, INFLUXDB_CLIENT, TIMEOUT, WORKING_DIR
+from conf import GRAFCAN__LOG_FILE_CLASSES_OBSERVATIONS_LAST as LOG_FILE
+from conf import HEADER_API_KEY, INFLUXDB_CLIENT, TIMEOUT
 
 
 class FetchObservationsLast:
@@ -25,7 +25,7 @@ class FetchObservationsLast:
         Inicializa la clase con la URL de la API y herramientas de log y manejo de errores.
         """
         self.url = "https://sensores.grafcan.es/api/v1.0/observations_last/?thing="
-        self.logger = LoggingHandler(log_file=WORKING_DIR / LOG_FILE).get_logger
+        self.logger = LoggingHandler(log_file=LOG_FILE).get_logger
         self.error_handler = ErrorHandler()
         self.client = INFLUXDB_CLIENT
 
@@ -112,7 +112,7 @@ class FetchObservationsLast:
 
         return df_pivoted
 
-    def fetch_observation_last(self, thing_id: int) -> pd.DataFrame:
+    def fetch_last_observation(self, thing_id: int) -> pd.DataFrame:
         """
         Ejecuta el flujo completo de obtención y procesamiento de observaciones para una estación específica.
 
@@ -146,5 +146,5 @@ class FetchObservationsLast:
 
 if __name__ == "__main__":
     fetcher = FetchObservationsLast()
-    df = fetcher.fetch_observation_last(2)
+    df = fetcher.fetch_last_observation(2)
     print(df)
