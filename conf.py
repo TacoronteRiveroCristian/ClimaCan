@@ -11,8 +11,12 @@ from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
 WORKING_DIR = Path(os.getenv("WORKDIR"))
 
-# Parametros API KEY
-HEADERS = {"accept": "application/json", "Authorization": f"Api-Key {GRAFCAN_TOKEN}"}
+# Parametros generales
+HEADER_API_KEY = {
+    "accept": "application/json",
+    "Authorization": f"Api-Key {GRAFCAN_TOKEN}",
+}
+TIMEOUT = 100
 
 # Parametros InfluxDB
 INFLUXDB_HOST = "climacan-influxdb"
@@ -24,9 +28,9 @@ INFLUXDB_CLIENT = InfluxdbOperation(
     timeout=INFLUXDB_TIMEOUT,
 )
 
-# Parametros Grafcan
-GRAFCAN_NAME_DATABASE_METADATA_STATIONS = "metadata_stations"
-GRAFCAN_NAME_MEASUREMENT_METADATA_STATIONS = "stations"
+# Parametros clase StationMetadataFetcher
 GRAFCAN__CSV_FILE_METADATA_STATIONS = "src/grafcan/data/metadata_stations.csv"
 GRAFCAN__LOG_FILE_METADATA_STATIONS = "src/grafcan/logs/metadata_stations.log"
-GRAFCAN__TIMEOUT_METADATA_STATIONS = 100
+
+# Parametros clase FetchObservationsLast
+GRAFCAN__LOG_FILE_OBSERVATIONS_LAST = "src/grafcan/logs/observations_last.log"
