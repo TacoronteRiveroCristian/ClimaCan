@@ -3,22 +3,22 @@ Script que se encarga de leer el fichero CSV donde contiene todos los metadatos 
 y registra uno a uno la ultima observacion de cada estacion en un servidor InfluxDB.
 """
 
-import logging
 from pathlib import Path
 
 import pandas as pd
+from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
+from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 
-from conf import (
-    GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS,
-    GRAFCAN__DATABASE_NAME_SCRIPT_WRITE_LAST_OBSERVATIONS,
-)
+from conf import GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS
+from conf import GRAFCAN__LOG_FILE_SCRIPT_WRITE_LAST_OBSERVATIONS as LOG_FILE
+from conf import GRAFCAN_DATABASE_NAME
 from conf import INFLUXDB_CLIENT as client
 from src.common.functions import normalize_text
 from src.grafcan.classes.FetchObservationsLast import FetchObservationsLast
 
 # Configuración del logger
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+ERROR_HANDLER = ErrorHandler()
+LOGGER = LoggingHandler(log_file=LOG_FILE).get_logger
 
 # Crear el objeto FetchObservationsLast
 fetcher = FetchObservationsLast()
@@ -33,9 +33,9 @@ def read_stations_csv(csv_file: Path) -> pd.DataFrame:
     :return: DataFrame de Pandas con los datos del archivo CSV.
     :rtype: pd.DataFrame
     """
-    logger.info(f"Leyendo archivo CSV desde {csv_file}")
+    LOGGER.info(f"Leyendo archivo CSV desde {csv_file}")
     df = pd.read_csv(csv_file).set_index("things_id")
-    logger.info(f"Archivo CSV leído correctamente, {len(df)} estaciones cargadas.")
+    LOGGER.info(f"Archivo CSV leído correctamente, {len(df)} estaciones cargadas.")
     return df
 
 
@@ -60,45 +60,42 @@ def normalize_measurement(text: str) -> str:
 
 
 if __name__ == "__main__":
-    logger.info("Inicio del proceso de registro de observaciones en InfluxDB.")
+    LOGGER.info("Inicio del proceso de registro de observaciones en InfluxDB.")
 
     # Leer el DataFrame de los metadatos de las estaciones
     df_stations = read_stations_csv(GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS)
 
     # Recorrer cada fila para obtener el índice y los metadatos de cada estación
     for index, row in df_stations.iterrows():
-        logger.info(f"Procesando estación con ID {index}.")
+        LOGGER.info(f"Procesando estación con ID {index}.")
 
         # Obtener la observación más reciente de la estación correspondiente
         last_observation = fetcher.fetch_last_observation(index)
         if last_observation.empty:
-            logger.warning(
-                f"No se encontraron observaciones recientes para la estación con ID {index}."
-            )
+            warning_message = f"No se encontraron observaciones recientes para la estación con ID {index}."
+            ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
             continue
 
         # Obtener diccionario de metadatos de la estación
         station_metadata = row.to_dict()
         # Obtener measurement para esta estación a partir del nombre de la localización
         measurement = normalize_measurement(station_metadata["locations_name"])
-        logger.info(
-            f"Registrando observación en measurement '{measurement}' para estación con ID {index}."
-        )
+        error_message = f"Registrando observación en measurement '{measurement}' para estación con ID {index}."
+        ERROR_HANDLER.handle_error(error_message, LOGGER)
 
         # Registrar datos en el servidor InfluxDB
         try:
             client.write_points(
-                database=GRAFCAN__DATABASE_NAME_SCRIPT_WRITE_LAST_OBSERVATIONS,
+                database=GRAFCAN_DATABASE_NAME,
                 measurement=measurement,
                 data=last_observation,
                 tags=station_metadata,
             )
-            logger.info(
+            LOGGER.info(
                 f"Observación registrada correctamente en InfluxDB para measurement '{measurement}'."
             )
         except Exception as e:
-            logger.error(
-                f"Error al registrar observación para estación con ID {index} en measurement '{measurement}': {e}"
-            )
+            warning_message = f"Error al registrar observación para estación con ID {index} en measurement '{measurement}': {e}"
+            ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
 
-    logger.info("Proceso de registro de observaciones completado.")
+    LOGGER.info("Proceso de registro de observaciones completado.")

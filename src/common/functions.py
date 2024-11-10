@@ -33,10 +33,12 @@ def write_status_task(field: str, value: int) -> None:
     :param value: Valor a escribir en el campo.
     :type value: str
     """
-    point = {
-        "measurement": GRAFCAN__MEASUREMENT_NAME_CHECK_TASKS_SCRIPT_MAIN_GRAFCAN,
-        "fields": {field: value},
-    }
+    point = [
+        {
+            "measurement": GRAFCAN__MEASUREMENT_NAME_CHECK_TASKS_SCRIPT_MAIN_GRAFCAN,
+            "fields": {field: value},
+        }
+    ]
     client.write_points(
         points=point,
         database=GRAFCAN_DATABASE_NAME,
