@@ -19,7 +19,8 @@ WORKDIR ${WORKDIR}
 COPY . .
 
 # Instalar dependencias
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 # Establecer variables de entorno
 ENV WORKDIR=${WORKDIR}
