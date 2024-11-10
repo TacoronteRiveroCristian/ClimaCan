@@ -13,7 +13,7 @@ from conf import (
     GRACAN__CRONTAB_RUN_UPDATE_LIST_OF_STATIONS,
     GRACAN__CRONTAB_RUN_WRITE_LAST_OBSERVATIONS,
 )
-from conf import GRAFCAN__LOG_FILE_SCRIPT_WRITE_LAST_OBSERVATIONS as LOG_FILE
+from conf import GRAFCAN__LOG_FILE_SCRIPT_MAIN_GRAFCAN as LOG_FILE
 from src.common.functions import write_status_task
 
 # Instanciar manejadores
@@ -34,7 +34,7 @@ def run_update_list_of_stations():
     LOGGER.info(f"Tarea {task} iniciada.")
     try:
         subprocess.run(
-            ["python", script],
+            ["/bin/python3", script],
             check=True,
             capture_output=True,
             text=True,
@@ -58,7 +58,7 @@ def run_write_last_observations():
     LOGGER.info(f"Tarea {task} iniciada.")
     try:
         subprocess.run(
-            ["python", script],
+            ["/bin/python3", script],
             check=True,
             capture_output=True,
             text=True,
@@ -78,6 +78,12 @@ def main() -> None:
     """
     scheduler = BlockingScheduler()
 
+    # Lanzar tarea de metadatos de estaciones ya que eso hace que dependa las siguientes funciones
+    LOGGER.info("Tarea de metadatos de estaciones iniciada.")
+    run_update_list_of_stations()
+    LOGGER.info("Tarea de metadatos de estaciones completada.")
+
+    # Lanzar tareas programadas
     scheduler.add_job(
         run_update_list_of_stations,
         CronTrigger.from_crontab(GRACAN__CRONTAB_RUN_UPDATE_LIST_OF_STATIONS),
