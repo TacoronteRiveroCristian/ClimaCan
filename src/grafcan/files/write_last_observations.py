@@ -99,4 +99,4 @@ if __name__ == "__main__":
             warning_message = f"Error al registrar observación para estación con ID {index} en measurement '{measurement}': {e}"
             ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
 
-    LOGGER.info("Proceso de registro de observaciones completado.")
+    LOGGER.info("Proceso de registro de observaciones completado.\n")

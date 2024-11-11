@@ -29,9 +29,9 @@ def run_update_list_of_stations():
     :return: None
     """
     task = "run_update_list_of_stations"
-    field = f"task_succes_{task}"
+    field = f"task_success_{task}"
     script = "src/grafcan/files/update_list_of_stations.py"
-    LOGGER.info(f"Tarea {task} iniciada.")
+    LOGGER.info(f"Iniciando tarea: '{task}'")
     try:
         subprocess.run(
             ["/bin/python3", script],
@@ -39,6 +39,7 @@ def run_update_list_of_stations():
             capture_output=True,
             text=True,
         )
+        LOGGER.info(f"Tarea '{task}' completada exitosamente.")
         write_status_task(field, 1)
     except Exception as e:
         write_status_task(field, 0)
@@ -53,9 +54,9 @@ def run_write_last_observations():
     :return: None
     """
     task = "run_write_last_observations"
-    field = f"task_succes_{task}"
+    field = f"task_success_{task}"
     script = "src/grafcan/files/write_last_observations.py"
-    LOGGER.info(f"Tarea {task} iniciada.")
+    LOGGER.info(f"Iniciando tarea: '{task}'")
     try:
         subprocess.run(
             ["/bin/python3", script],
@@ -63,6 +64,7 @@ def run_write_last_observations():
             capture_output=True,
             text=True,
         )
+        LOGGER.info(f"Tarea '{task}' completada exitosamente.")
         write_status_task(field, 1)
     except Exception as e:
         write_status_task(field, 0)
@@ -78,12 +80,11 @@ def main() -> None:
     """
     scheduler = BlockingScheduler()
 
-    # Lanzar tarea de metadatos de estaciones ya que eso hace que dependa las siguientes funciones
-    LOGGER.info("Tarea de metadatos de estaciones iniciada.")
+    # Lanzar tarea inicial para actualizar la lista de estaciones
+    LOGGER.info("Ejecutando tarea inicial para actualizar la lista de estaciones.")
     run_update_list_of_stations()
-    LOGGER.info("Tarea de metadatos de estaciones completada.")
 
-    # Lanzar tareas programadas
+    # Configurar tareas programadas
     scheduler.add_job(
         run_update_list_of_stations,
         CronTrigger.from_crontab(GRACAN__CRONTAB_RUN_UPDATE_LIST_OF_STATIONS),

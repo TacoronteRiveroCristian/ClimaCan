@@ -1,3 +1,4 @@
+version: '3'
 services:
   climacan-dev:
     build:
@@ -7,6 +8,8 @@ services:
     env_file:
       - ../.env
     command: sleep infinity
+    networks:
+      - climacan_network
 
   climacan-influxdb:
     image: influxdb:1.8
@@ -21,6 +24,8 @@ services:
     depends_on:
       - climacan-dev
     restart: unless-stopped
+    networks:
+      - climacan_network
 
   climacan-grafana:
     image: grafana/grafana
@@ -34,3 +39,10 @@ services:
     depends_on:
       - climacan-dev
     restart: unless-stopped
+    networks:
+      - climacan_network
+
+# Definición de red personalizada
+networks:
+  climacan_network:
+    driver: bridge
