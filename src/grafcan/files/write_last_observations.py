@@ -80,8 +80,9 @@ if __name__ == "__main__":
         station_metadata = row.to_dict()
         # Obtener measurement para esta estación a partir del nombre de la localización
         measurement = normalize_measurement(station_metadata["locations_name"])
-        error_message = f"Registrando observación en measurement '{measurement}' para estación con ID {index}."
-        ERROR_HANDLER.handle_error(error_message, LOGGER)
+        LOGGER.info(
+            f"Registrando observación en measurement '{measurement}' para estación con ID {index}."
+        )
 
         # Registrar datos en el servidor InfluxDB
         try:
