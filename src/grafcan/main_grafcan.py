@@ -14,10 +14,16 @@ from conf import (
     GRACAN__CRONTAB_RUN_WRITE_LAST_OBSERVATIONS,
 )
 from conf import GRAFCAN__LOG_FILE_SCRIPT_MAIN_GRAFCAN as LOG_FILE
+from conf import LOG_BACKUP_PERIOD, LOG_RETENTION_PERIOD
 from src.common.functions import write_status_task
 
 # Instanciar manejadores
-LOGGER = LoggingHandler(log_file=LOG_FILE).get_logger
+handler = LoggingHandler(
+    log_file=LOG_FILE,
+    log_backup_period=LOG_BACKUP_PERIOD,
+    log_retention_period=LOG_RETENTION_PERIOD,
+)
+LOGGER = handler.configure_logger()
 ERROR_HANDLER = ErrorHandler()
 
 

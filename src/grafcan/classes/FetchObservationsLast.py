@@ -1,17 +1,15 @@
 """
-Clase para obtener el últimos registro de observaciones de una estación de Grafcan
+Clase para obtener el último registro de observaciones de una estación de Grafcan
 según su ID y organizarlo en un DataFrame.
 """
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pandas as pd
-from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
-from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 from requests import get
 
-from conf import GRAFCAN__LOG_FILE_CLASSES_OBSERVATIONS_LAST as LOG_FILE
-from conf import HEADER_API_KEY, INFLUXDB_CLIENT, TIMEOUT
+from conf import HEADER_API_KEY, TIMEOUT
+from src.grafcan.classes.Exceptions import DataFetchError
 
 
 class FetchObservationsLast:
@@ -22,12 +20,9 @@ class FetchObservationsLast:
 
     def __init__(self):
         """
-        Inicializa la clase con la URL de la API y herramientas de log y manejo de errores.
+        Inicializa la clase con la URL de la API.
         """
         self.url = "https://sensores.grafcan.es/api/v1.0/observations_last/?thing="
-        self.logger = LoggingHandler(log_file=LOG_FILE).get_logger
-        self.error_handler = ErrorHandler()
-        self.client = INFLUXDB_CLIENT
 
     def _get_response(self, thing_id: int) -> Optional[List[dict]]:
         """
@@ -37,31 +32,23 @@ class FetchObservationsLast:
         :type thing_id: int
         :return: Lista de observaciones si la solicitud es exitosa, None si ocurre un error.
         :rtype: Optional[List[dict]]
+        :raises DataFetchError: Si ocurre un error al obtener los datos de la API.
         """
         url = self.url + str(thing_id)
         try:
-            self.logger.info(
-                f"Solicitando datos de la estación con ID {thing_id} desde {url}"
-            )
             response = get(url, headers=HEADER_API_KEY, timeout=TIMEOUT)
             response.raise_for_status()
             observations = response.json().get("observations", [])
 
             if not observations:
-                self.logger.warning(
-                    f"No se encontraron datos para la estación con ID {thing_id}"
-                )
-            else:
-                self.logger.info(
-                    f"Datos obtenidos con éxito: {response.json().get('count')} métricas encontradas."
+                raise DataFetchError(
+                    f"No se encontraron datos para la estación con ID {thing_id}."
                 )
             return observations
         except Exception as e:
-            error_message = (
+            raise DataFetchError(
                 f"Error al obtener datos de la estación con ID {thing_id}: {e}"
-            )
-            self.error_handler.handle_error(error_message, self.logger)
-            return None
+            ) from e
 
     def _clean_column_name(self, name: str) -> str:
         """
@@ -106,13 +93,9 @@ class FetchObservationsLast:
         # Convertir el índice de tiempo a formato datetime
         df_pivoted.index = pd.to_datetime(df_pivoted.index)
 
-        self.logger.info(
-            f"Observaciones procesadas en DataFrame con {df_pivoted.shape[1]} columnas."
-        )
-
         return df_pivoted
 
-    def fetch_last_observation(self, thing_id: int) -> pd.DataFrame:
+    def fetch_last_observation(self, thing_id: int) -> List[Dict]:
         """
         Ejecuta el flujo completo de obtención y procesamiento de observaciones para una estación específica.
 
@@ -120,31 +103,33 @@ class FetchObservationsLast:
         :type thing_id: int
         :return: DataFrame con el último registro de observaciones, si la obtención fue exitosa.
         :rtype: pd.DataFrame
+        :raises DataFetchError: Si no se pueden extraer los datos.
         """
-        self.logger.info(
-            f"Iniciando proceso de obtención y procesamiento de datos para la estación con ID {thing_id}."
-        )
-
         # Obtener observaciones de la API
         observations = self._get_response(thing_id)
         if observations is None:
-            error_message = (
+            raise DataFetchError(
                 f"No se pudieron extraer datos para la estación con ID {thing_id}."
             )
-            self.error_handler.handle_error(error_message, self.logger)
-            return pd.DataFrame()  # Devuelve un DataFrame vacío en caso de error
 
-        # Procesar las observaciones y devolver el DataFrame resultante
-        dataframe = self._parse_observations(observations)
+        # Crear lista de puntos con el nombre de la columna, el valor y su unidad de tiempo
+        points = [
+            {
+                "time": observation["resultTime"],
+                "fields": {
+                    "name": self._clean_column_name(
+                        observation["name"] + "_" + observation["unitOfMeasurement"]
+                    ),
+                    "value": observation["value"],
+                },
+            }
+            for observation in observations
+        ]
 
-        self.logger.info(
-            f"Proceso completado para la estación con ID {thing_id}. DataFrame listo para su uso.\n"
-        )
-
-        return dataframe
+        return points
 
 
 if __name__ == "__main__":
     fetcher = FetchObservationsLast()
-    df = fetcher.fetch_last_observation(2)
-    print(df)
+    points = fetcher.fetch_last_observation(2)
+    print(points)
