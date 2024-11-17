@@ -117,10 +117,9 @@ class FetchObservationsLast:
             {
                 "time": observation["resultTime"],
                 "fields": {
-                    "name": self._clean_column_name(
+                    self._clean_column_name(
                         observation["name"] + "_" + observation["unitOfMeasurement"]
-                    ),
-                    "value": observation["value"],
+                    ).strip("_"): observation["value"]
                 },
             }
             for observation in observations

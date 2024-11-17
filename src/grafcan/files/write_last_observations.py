@@ -40,8 +40,17 @@ def read_stations_csv(csv_file: Path) -> pd.DataFrame:
     :rtype: pd.DataFrame
     """
     LOGGER.info(f"Leyendo archivo CSV desde {csv_file}")
-    df = pd.read_csv(csv_file).set_index("things_id")
+    df = pd.read_csv(csv_file, index_col=None).set_index("thing_id")
     df.sort_index(inplace=True)
+
+    # Eliminar cualquier columna que no sea nombrada correctamente
+    try:
+        df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
+    except Exception as e:
+        raise Exception(
+            f"Ha ocurrido un error al intentar descartar las columnas '^Unnamed'.: {e}"
+        ) from e
+
     LOGGER.info(f"Archivo CSV leido correctamente, {len(df)} estaciones cargadas.")
     return df
 
@@ -65,7 +74,9 @@ def normalize_measurement(text: str) -> str:
     )
 
 
-def add_features_to_points(points: List[Dict], measurement: str) -> List[Dict]:
+def add_features_to_points(
+    points: List[Dict], measurement: str, tags: Dict
+) -> List[Dict]:
     """
     Agrega clave measurement a cada diccionario y elimina claves en "fields" con valores nulos.
 
@@ -78,10 +89,12 @@ def add_features_to_points(points: List[Dict], measurement: str) -> List[Dict]:
     """
     # Agregar clave measurement a cada diccionario y eliminar claves en "fields" con valores nulos
     valid_points = []
-    # Agregar clave measurement a cada diccionario y eliminar toda clave que contenga valor nulo
+    # Agregar clave measurement y tags a cada diccionario y eliminar toda clave que contenga valor nulo
     for point in points:
         # Agregar measurement
         point["measurement"] = measurement
+        # Agregar tags
+        point["tags"] = tags
 
         # Crear lista de claves a eliminar en el caso de que sean nulos sus valores
         keys_to_remove = [
@@ -114,9 +127,18 @@ if __name__ == "__main__":
             # Obtener diccionario de metadatos de la estacion
             station_metadata = row.to_dict()
             # Obtener measurement para esta estacion a partir del nombre de la localizacion
-            measurement = normalize_measurement(station_metadata["locations_name"])
+            measurement = station_metadata["location_name"]
             # Agregar el measurement a cada diccionario de la lista de puntos y eliminar los valores nulos
-            data_points = add_features_to_points(last_observation, measurement)
+            data_points = add_features_to_points(
+                last_observation, measurement, station_metadata
+            )
+
+            # Comprobar si hay datos disponibles, sino continuar con la siguiente estacion
+            if len(data_points) == 0:
+                LOGGER.warning(
+                    f"No se han encontrado datos para la estacion con ID '{index}'."
+                )
+                continue
 
             LOGGER.info(
                 f"Registrando observacion en measurement '{measurement}' para estacion con ID '{index}'."
@@ -126,14 +148,15 @@ if __name__ == "__main__":
             client.write_points(
                 database=GRAFCAN_DATABASE_NAME,
                 points=data_points,
-                tags=station_metadata,
             )
             LOGGER.info(
                 f"Observacion registrada correctamente en InfluxDB para measurement '{measurement}'."
             )
 
         except DataFetchError as e:
-            LOGGER.error(f"Error al obtener datos para la estacion con ID '{index}': '{e}'")
+            LOGGER.error(
+                f"Error al obtener datos para la estacion con ID '{index}': '{e}'"
+            )
             continue  # Continuar con la siguiente estacion en caso de error de obtencion de datos
         except Exception as e:
             LOGGER.error(
