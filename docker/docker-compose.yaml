@@ -1,14 +1,14 @@
 services:
-  # climacan-dev:
-  #   build:
-  #     context: ..
-  #     dockerfile: docker/base.Dockerfile
-  #   container_name: climacan-dev
-  #   env_file:
-  #     - ../.env
-  #   command: sleep infinity
-  #   networks:
-  #     - climacan_network
+  climacan-dev:
+    build:
+      context: ..
+      dockerfile: docker/base.Dockerfile
+    container_name: climacan-dev
+    env_file:
+      - ../.env
+    command: sleep infinity
+    networks:
+      - climacan_network
 
   climacan-influxdb:
     image: influxdb:1.8
@@ -20,8 +20,8 @@ services:
       - ./volumes/influxdb/db:/var/lib/influxdb/backup
     environment:
       - TZ=Atlantic/Canary
-    # depends_on:
-    #   - climacan-dev
+    depends_on:
+      - climacan-dev
     restart: unless-stopped
     networks:
       - climacan_network
@@ -41,8 +41,8 @@ services:
       - GF_PATHS_LOGS=/var/log/grafana
       - GRAFANA_PORT=${GRAFANA_PORT}
       - INFLUXDB_PORT=${INFLUXDB_PORT}
-    # depends_on:
-    #   - climacan-dev
+    depends_on:
+      - climacan-dev
     restart: unless-stopped
     networks:
       - climacan_network
