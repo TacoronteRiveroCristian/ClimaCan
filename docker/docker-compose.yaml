@@ -1,28 +1,27 @@
-version: '3'
 services:
-  climacan-dev:
-    build:
-      context: ..
-      dockerfile: docker/base.Dockerfile
-    container_name: climacan-dev
-    env_file:
-      - ../.env
-    command: sleep infinity
-    networks:
-      - climacan_network
+  # climacan-dev:
+  #   build:
+  #     context: ..
+  #     dockerfile: docker/base.Dockerfile
+  #   container_name: climacan-dev
+  #   env_file:
+  #     - ../.env
+  #   command: sleep infinity
+  #   networks:
+  #     - climacan_network
 
   climacan-influxdb:
     image: influxdb:1.8
     container_name: climacan-influxdb
     ports:
-      - "8096:8086"
+      - "${INFLUXDB_PORT}:8086"
     volumes:
       - ./volumes/influxdb/data:/var/lib/influxdb
       - ./volumes/influxdb/db:/var/lib/influxdb/backup
     environment:
       - TZ=Atlantic/Canary
-    depends_on:
-      - climacan-dev
+    # depends_on:
+    #   - climacan-dev
     restart: unless-stopped
     networks:
       - climacan_network
@@ -31,13 +30,19 @@ services:
     image: grafana/grafana
     container_name: climacan-grafana
     ports:
-      - "3010:3000"
+      - "${GRAFANA_PORT}:3000"
+    volumes:
+      - ./volumes/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./volumes/grafana/provisioning:/etc/grafana/provisioning
+      - ./volumes/grafana/dashboards:/var/lib/grafana/dashboards
     environment:
       - TZ=Atlantic/Canary
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_PATHS_LOGS=/var/log/grafana
-    depends_on:
-      - climacan-dev
+      - GRAFANA_PORT=${GRAFANA_PORT}
+      - INFLUXDB_PORT=${INFLUXDB_PORT}
+    # depends_on:
+    #   - climacan-dev
     restart: unless-stopped
     networks:
       - climacan_network

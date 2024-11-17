@@ -33,6 +33,7 @@ INFLUXDB_CLIENT = InfluxdbOperation(
 )
 
 GRAFCAN_DATABASE_NAME = "grafcan"
+TASKS_DATABASE_NAME = "tasks"
 
 # Parametros clase StationMetadataFetcher
 GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS = (

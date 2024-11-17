@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: 'Provision-Single-Weather-Station-Dashboard'
+    orgId: 1
+    folder: 'Grafcan'
+    type: file
+    disableDeletion: false
+    editable: false
+    options:
+      path: /var/lib/grafana/dashboards/Provision-Single-Weather-Station-Dashboard.json

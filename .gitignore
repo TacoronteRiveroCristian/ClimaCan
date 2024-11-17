@@ -1,4 +1,4 @@
-volumes/
+volumes/influxdb
 **/data/*
 **/log/*
 **/logs/*

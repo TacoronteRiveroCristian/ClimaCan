@@ -6,7 +6,7 @@ import unidecode
 
 from conf import (
     GRAFCAN__MEASUREMENT_NAME_CHECK_TASKS_SCRIPT_MAIN_GRAFCAN,
-    GRAFCAN_DATABASE_NAME,
+    TASKS_DATABASE_NAME,
 )
 from conf import INFLUXDB_CLIENT as client
 
@@ -41,5 +41,5 @@ def write_status_task(field: str, value: int) -> None:
     ]
     client.write_points(
         points=point,
-        database=GRAFCAN_DATABASE_NAME,
+        database=TASKS_DATABASE_NAME,
     )
