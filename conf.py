@@ -24,7 +24,7 @@ LOG_RETENTION_PERIOD = "1d"
 
 # Parametros InfluxDB
 INFLUXDB_HOST = "climacan-influxdb"
-INFLUXDB_PORT = 8086
+INFLUXDB_PORT = 8096
 INFLUXDB_TIMEOUT = 100
 INFLUXDB_CLIENT = InfluxdbOperation(
     host=INFLUXDB_HOST,
