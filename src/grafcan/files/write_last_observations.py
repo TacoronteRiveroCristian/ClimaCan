@@ -9,7 +9,7 @@ from typing import Dict, List
 import pandas as pd
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 
-from conf import GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS
+from conf import ERROR_HANDLER, GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS
 from conf import GRAFCAN__LOG_FILE_SCRIPT_WRITE_LAST_OBSERVATIONS as LOG_FILE
 from conf import GRAFCAN_DATABASE_NAME
 from conf import INFLUXDB_CLIENT as client
@@ -135,9 +135,8 @@ if __name__ == "__main__":
 
             # Comprobar si hay datos disponibles, sino continuar con la siguiente estacion
             if len(data_points) == 0:
-                LOGGER.warning(
-                    f"No se han encontrado datos para la estacion con ID '{index}'."
-                )
+                warning_message = f"No se han encontrado datos para la estacion con ID '{index}'."
+                ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
                 continue
 
             LOGGER.info(
@@ -154,14 +153,12 @@ if __name__ == "__main__":
             )
 
         except DataFetchError as e:
-            LOGGER.error(
-                f"Error al obtener datos para la estacion con ID '{index}': '{e}'"
-            )
+            warning_message = f"Error al obtener datos para la estacion con ID '{index}': '{e}'"
+            ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
             continue  # Continuar con la siguiente estacion en caso de error de obtencion de datos
         except Exception as e:
-            LOGGER.error(
-                f"Error inesperado al procesar la estacion con ID '{index}': '{e}'"
-            )
+            warning_message = f"Error inesperado al procesar la estacion con ID '{index}': '{e}'"
+            ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
             continue  # Continuar con la siguiente estacion en caso de error general
 
     LOGGER.info("Proceso de registro de observaciones completado.\n")

@@ -6,6 +6,10 @@ import os
 from pathlib import Path
 
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
+from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
+
+# Manejador de errores, necesario para capturar la salida stderr de los scripts principales
+ERROR_HANDLER = ErrorHandler()
 
 # Variables de entorno
 GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
@@ -25,7 +29,7 @@ LOG_RETENTION_PERIOD = "1d"
 # Parametros InfluxDB
 INFLUXDB_HOST = "climacan-influxdb"
 INFLUXDB_PORT = 8096
-INFLUXDB_TIMEOUT = 100
+INFLUXDB_TIMEOUT = 5
 INFLUXDB_CLIENT = InfluxdbOperation(
     host=INFLUXDB_HOST,
     port=INFLUXDB_PORT,
@@ -55,9 +59,6 @@ GRAFCAN__LOG_FILE_SCRIPT_WRITE_LAST_OBSERVATIONS = (
 )
 
 # Parametros fichero main_grafcan.py
-GRAFCAN__LOG_FILE_SCRIPT_MAIN_GRAFCAN = (
-    WORKING_DIR / "src/grafcan/logs/main_grafcan.log"
-)
 GRAFCAN__MEASUREMENT_NAME_CHECK_TASKS_SCRIPT_MAIN_GRAFCAN = "tasks_status"
 GRACAN__CRONTAB_RUN_UPDATE_HISTORICAL_LOCATIONS = "0 23 * * 1,3,5"
-GRACAN__CRONTAB_RUN_WRITE_LAST_OBSERVATIONS = "*/10 * * * *"
+GRACAN__CRONTAB_RUN_WRITE_LAST_OBSERVATIONS = "*/3 * * * *"

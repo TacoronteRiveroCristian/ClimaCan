@@ -9,6 +9,7 @@ import pandas as pd
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 from requests import get
 
+from conf import ERROR_HANDLER
 from conf import GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS as CSV_FILE
 from conf import GRAFCAN__LOG_FILE_CLASSES_METADATA_STATIONS as LOG_FILE
 from conf import HEADER_API_KEY, LOG_BACKUP_PERIOD, LOG_RETENTION_PERIOD, TIMEOUT
@@ -29,11 +30,11 @@ class FetchLocationsData:
             }
         except KeyError as e:
             raise KeyError(
-                f"Falta la clave esperada: {e} en la estación {location.get('id')}."
+                f"Falta la clave esperada: '{e}' en la estación '{location.get('id')}'."
             ) from e
         except Exception as e:
             raise Exception(
-                f"Error al procesar la estación {location.get('id')}: {e}"
+                f"Error al procesar la estación '{location.get('id')}': '{e}'"
             ) from e
         else:
             df_locations = pd.DataFrame([metadata_location]).add_prefix("location_")
@@ -60,11 +61,11 @@ class FetchThingsData:
             }
         except KeyError as e:
             raise KeyError(
-                f"Falta la clave esperada: {e} en la estación {station.get('id')}."
+                f"Falta la clave esperada: '{e}' en la estación '{station.get('id')}'."
             ) from e
         except Exception as e:
             raise Exception(
-                f"Error al procesar la estación {station.get('id')}: {e}"
+                f"Error al procesar la estación '{station.get('id')}': '{e}'"
             ) from e
         else:
             df_things = pd.DataFrame([station_data]).add_prefix("thing_")
@@ -81,7 +82,7 @@ class FetchHistoricalLocationsData:
             list_locations = result["location"]
             if len(list_locations) != 1:
                 raise Exception(
-                    f"La clave location debe ser de un solo elemento: {result}."
+                    f"La clave location debe ser de un solo elemento: '{result}'."
                 )
             else:
                 result["location"] = list_locations[0]
@@ -108,29 +109,30 @@ class StationMetadataFetcher(
             log_retention_period=LOG_RETENTION_PERIOD,
         )
         self.logger = handler.configure_logger()
+        self.error = ERROR_HANDLER
 
     def get_data_from_api(self, url: str) -> Dict:
         """Obtiene los datos de la API de Grafcan."""
         try:
-            self.logger.info(f"Solicitando datos de la API: {url}")
+            self.logger.info(f"Solicitando datos de la API: '{url}'")
             response = get(url, headers=self.headers, timeout=self.timeout)
             response.raise_for_status()
         except Exception as e:
-            self.logger.error(f"Error al obtener los datos de la API: {e}")
+            self.logger.error(f"Error al obtener los datos de la API: '{e}'")
             raise
         else:
-            self.logger.info(f"Datos obtenidos con éxito de la API: {url}")
+            self.logger.info(f"Datos obtenidos con éxito de la API: '{url}'")
             return response.json()
 
     def save_csv(self, df: pd.DataFrame) -> None:
         """Guarda el DataFrame en un archivo CSV."""
         try:
-            self.logger.info(f"Guardando datos en el archivo CSV: {CSV_FILE}")
+            self.logger.info(f"Guardando datos en el archivo CSV: '{CSV_FILE}'")
             CSV_FILE.parent.mkdir(parents=True, exist_ok=True)
             df.to_csv(CSV_FILE, index=True)
             self.logger.info("Datos guardados exitosamente en el archivo CSV.")
         except Exception as e:
-            self.logger.error(f"Error al guardar datos en el archivo CSV: {e}")
+            self.logger.error(f"Error al guardar datos en el archivo CSV: '{e}'")
             raise
 
     def build_row(self, location: Dict) -> pd.DataFrame:
@@ -147,11 +149,13 @@ class StationMetadataFetcher(
             row["start_up_station"] = start_up_station
 
             self.logger.info(
-                f"Datos procesados para la estación ID: {location['thing']}"
+                f"Datos procesados para la estación ID: '{location['thing']}'"
             )
             return row
         except Exception as e:
-            self.logger.error(f"Error al procesar la estación {location['thing']}: {e}")
+            self.logger.error(
+                f"Error al procesar la estación '{location['thing']}': '{e}'"
+            )
             return None
 
     def run(self):
@@ -167,7 +171,8 @@ class StationMetadataFetcher(
                 response_historical_locations
             )
         except Exception as e:
-            self.logger.error(f"Error al obtener o formatear datos históricos: {e}")
+            error_message = f"Error al obtener o formatear datos históricos: '{e}'"
+            self.error.handle_error(error_message, self.logger)
             return
 
         stations_data = []
@@ -177,16 +182,16 @@ class StationMetadataFetcher(
             if row is not None:
                 stations_data.append(row)
             else:
-                self.logger.warning(
-                    f"Omitiendo estación ID: {location['thing']} debido a un error en el procesamiento."
-                )
+                warning_message = f"Omitiendo estación ID: '{location['thing']}' debido a un error en el procesamiento."
+                self.error.handle_error(warning_message, self.logger, exit_code=2)
                 continue
 
         try:
             df_historical_locations = pd.concat(stations_data)
             self.save_csv(df_historical_locations)
         except Exception as e:
-            self.logger.error(f"Error en la concatenación o guardado de los datos: {e}")
+            error_message = f"Error al guardar datos históricos: '{e}'"
+            self.error.handle_error(error_message, self.logger)
         else:
             self.logger.info("Proceso completado exitosamente.\n")
 

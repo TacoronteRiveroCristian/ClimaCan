@@ -14,13 +14,13 @@ services:
     image: influxdb:1.8
     container_name: climacan-influxdb
     ports:
-      - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
+      - "${INFLUXDB_PORT:-8096}:${INFLUXDB_PORT:-8096}"
     volumes:
       - ./volumes/influxdb/data:/var/lib/influxdb
       - ./volumes/influxdb/db:/var/lib/influxdb/backup
     environment:
       - TZ=Atlantic/Canary
-      - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT}  # Cambiar el puerto interno a 8096
+      - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT:-8096}  # Cambiar el puerto interno a 8096
     depends_on:
       - climacan-dev
     restart: unless-stopped
@@ -31,19 +31,19 @@ services:
     image: grafana/grafana
     container_name: climacan-grafana
     ports:
-      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+      - "${GRAFANA_PORT:-3010}:${GRAFANA_PORT:-3010}"
     volumes:
       - ./volumes/grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./volumes/grafana/provisioning:/etc/grafana/provisioning
-      - ./volumes/grafana/data:/var/lib/grafana
-      - ./volumes/grafana/img:/usr/share/grafana/public/myimg
+      - ./volumes/grafana/dashboards:/etc/grafana/dashboards
+      - ./volumes/grafana/my_img:/usr/share/grafana/public/my_img
     environment:
       - TZ=Atlantic/Canary
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_PATHS_LOGS=/var/log/grafana
-      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT}  # Cambiar el puerto interno de Grafana a 3010
-      - GRAFANA_PORT=${GRAFANA_PORT}
-      - INFLUXDB_PORT=${INFLUXDB_PORT}
+      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT:-3010}  # Cambiar el puerto interno de Grafana a 3010
+      - GRAFANA_PORT=${GRAFANA_PORT:-3010}
+      - INFLUXDB_PORT=${INFLUXDB_PORT:-8096}
     depends_on:
       - climacan-dev
     restart: unless-stopped

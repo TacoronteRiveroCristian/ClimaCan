@@ -14,16 +14,10 @@ from conf import (
     GRACAN__CRONTAB_RUN_WRITE_LAST_OBSERVATIONS,
     GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS,
 )
-from conf import GRAFCAN__LOG_FILE_SCRIPT_MAIN_GRAFCAN as LOG_FILE
-from conf import LOG_BACKUP_PERIOD, LOG_RETENTION_PERIOD
 from src.common.functions import write_status_task
 
 # Instanciar manejadores
-handler = LoggingHandler(
-    log_file=LOG_FILE,
-    log_backup_period=LOG_BACKUP_PERIOD,
-    log_retention_period=LOG_RETENTION_PERIOD,
-)
+handler = LoggingHandler()
 LOGGER = handler.configure_logger()
 ERROR_HANDLER = ErrorHandler()
 
@@ -48,9 +42,9 @@ def run_update_historical_locations():
         )
         LOGGER.info(f"Tarea '{task}' completada exitosamente.")
         write_status_task(field, 1)
-    except Exception as e:
+    except subprocess.CalledProcessError as e:
         write_status_task(field, 0)
-        error_message = f"Error al ejecutar el script '{script}': {e}"
+        error_message = f"Error al ejecutar el script '{script}': {e.stderr}"
         ERROR_HANDLER.handle_error(error_message, LOGGER)
 
 
@@ -73,9 +67,9 @@ def run_write_last_observations():
         )
         LOGGER.info(f"Tarea '{task}' completada exitosamente.")
         write_status_task(field, 1)
-    except Exception as e:
+    except subprocess.CalledProcessError as e:
         write_status_task(field, 0)
-        error_message = f"Error al ejecutar el script '{script}': {e}"
+        error_message = f"Error al ejecutar el script '{script}': {e.stderr}"
         ERROR_HANDLER.handle_error(error_message, LOGGER)
 
 
