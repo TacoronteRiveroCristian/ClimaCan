@@ -7,6 +7,7 @@ services:
     env_file:
       - ../.env
     command: /bin/python3 /workspaces/ClimaCan/src/grafcan/main_grafcan.py
+    restart: unless-stopped
     networks:
       - climacan_network
 
