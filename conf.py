@@ -12,6 +12,7 @@ from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
 ERROR_HANDLER = ErrorHandler()
 
 # Variables de entorno
+INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")
 GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
 WORKING_DIR = Path(os.getenv("WORKDIR"))
 
@@ -28,7 +29,6 @@ LOG_RETENTION_PERIOD = "1d"
 
 # Parametros InfluxDB
 INFLUXDB_HOST = "climacan-influxdb"
-INFLUXDB_PORT = 8096
 INFLUXDB_TIMEOUT = 5
 INFLUXDB_CLIENT = InfluxdbOperation(
     host=INFLUXDB_HOST,
