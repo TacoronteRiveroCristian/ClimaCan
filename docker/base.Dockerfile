@@ -20,7 +20,8 @@ RUN git config --global user.name "${GITHUB_USERNAME}" && \
 # Copiar archivos y configurar permisos
 COPY . ${WORKDIR}
 RUN chown -R appuser:appuser ${WORKDIR} && \
-    chmod -R 777 ${WORKDIR}
+    chmod -R 770 ${WORKDIR} && \
+    chmod 600 ${WORKDIR}/.env
 
 # Cambiar al usuario sin privilegios
 USER appuser
