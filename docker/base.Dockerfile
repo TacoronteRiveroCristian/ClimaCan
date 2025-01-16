@@ -9,31 +9,31 @@ ARG WORKDIR="/workspaces/ClimaCan"
 ENV TZ=Atlantic/Canary
 RUN sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ | sudo tee /etc/timezone
 
+# Establecer variables de entorno
+ENV WORKDIR=${WORKDIR}
+ENV GRAFCAN_TOKEN=${GRAFCAN_TOKEN}
+ENV PYTHONPATH=${PYTHONPATH}:${WORKDIR}
+
 # Crear usuario sin privilegios
 USER root
-RUN useradd -ms /bin/bash appuser
 
 # Configurar credenciales de GitHub (antes del COPY)
 RUN git config --global user.name "${GITHUB_USERNAME}" && \
     git config --global user.email "${GITHUB_GMAIL}"
 
 # Copiar archivos y configurar permisos
-COPY . ${WORKDIR}
-RUN chown -R appuser:appuser ${WORKDIR} && \
+WORKDIR ${WORKDIR}
+COPY . .
+RUN chown -R dev_container:dev_container ${WORKDIR} && \
     chmod -R 770 ${WORKDIR} && \
     chmod 600 ${WORKDIR}/.env
 
 # Cambiar al usuario sin privilegios
-USER appuser
-WORKDIR ${WORKDIR}
+USER dev_container
 
-# Instalar dependencias
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Establecer variables de entorno
-ENV WORKDIR=${WORKDIR}
-ENV GRAFCAN_TOKEN=${GRAFCAN_TOKEN}
-ENV PYTHONPATH=${PYTHONPATH}:${WORKDIR}
+# Crear entorno virtual y instalar dependencias
+RUN python3 -m venv .venv && \
+    .venv/bin/pip install --upgrade pip
 
 # Comando de arranque
 CMD ["/bin/bash"]

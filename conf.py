@@ -14,7 +14,7 @@ ERROR_HANDLER = ErrorHandler()
 # Variables de entorno
 INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")
 GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
-WORKING_DIR = Path(os.getenv("WORKDIR"))
+WORKDIR = Path(os.getenv("WORKDIR"))
 
 # Parametros generales
 HEADER_API_KEY = {
@@ -41,20 +41,20 @@ TASKS_DATABASE_NAME = "tasks"
 
 # Parametros clase StationMetadataFetcher
 GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS = (
-    WORKING_DIR / "src/grafcan/data/metadata_stations.csv"
+    WORKDIR / "src/grafcan/data/metadata_stations.csv"
 )
 GRAFCAN__LOG_FILE_CLASSES_METADATA_STATIONS = (
-    WORKING_DIR / "src/grafcan/files/logs/metadata_stations/metadata_stations.log"
+    WORKDIR / "src/grafcan/files/logs/metadata_stations/metadata_stations.log"
 )
 
 # Parametros clase FetchObservationsLast
 GRAFCAN__LOG_FILE_CLASSES_OBSERVATIONS_LAST = (
-    WORKING_DIR / "src/grafcan/classes/logs/observations_last/observations_last.log"
+    WORKDIR / "src/grafcan/classes/logs/observations_last/observations_last.log"
 )
 
 # Parametros fichero write_last_observations.py
 GRAFCAN__LOG_FILE_SCRIPT_WRITE_LAST_OBSERVATIONS = (
-    WORKING_DIR
+    WORKDIR
     / "src/grafcan/files/logs/write_last_observations/write_last_observations.log"
 )
 

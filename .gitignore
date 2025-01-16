@@ -4,6 +4,7 @@ volumes/influxdb
 **/logs/*
 *.ipynb
 !src/aemet/chore.ipynb
+*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

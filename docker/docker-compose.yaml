@@ -11,6 +11,10 @@ services:
     restart: unless-stopped
     networks:
       - climacan_network
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+
 
   climacan-influxdb:
     image: influxdb:1.8
@@ -22,7 +26,7 @@ services:
       - ./volumes/influxdb/db:/var/lib/influxdb/backup
     environment:
       - TZ=Atlantic/Canary
-      - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT:-8096}  # Cambiar el puerto interno a 8096
+      - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT:-8096}
     depends_on:
       - climacan-dev
     restart: unless-stopped
@@ -43,7 +47,7 @@ services:
       - TZ=Atlantic/Canary
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_PATHS_LOGS=/var/log/grafana
-      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT:-3010}  # Cambiar el puerto interno de Grafana a 3010
+      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT:-3010}
       - GRAFANA_PORT=${GRAFANA_PORT:-3010}
       - INFLUXDB_PORT=${INFLUXDB_PORT:-8096}
     depends_on:
@@ -52,7 +56,7 @@ services:
     networks:
       - climacan_network
 
-# Definición de red personalizada
+# Red personalizada
 networks:
   climacan_network:
     driver: bridge
