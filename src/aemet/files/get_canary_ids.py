@@ -1,3 +1,7 @@
+"""
+Script para obtener el codigo de cada municipio canario de la API de AEMET.
+"""
+
 import json
 from datetime import datetime
 from pathlib import Path
