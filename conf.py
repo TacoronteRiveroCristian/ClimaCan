@@ -5,21 +5,18 @@ Fichero de configuración para el proyecto ClimaCan.
 import os
 from pathlib import Path
 
-from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
-from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
-
-# Manejador de errores, necesario para capturar la salida stderr de los scripts principales
-ERROR_HANDLER = ErrorHandler()
-
-# Variables de entorno
-INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")
-GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
+# Variables de entorno provenientes del archivo .env
+AEMET_TOKEN = os.getenv("AEMET_TOKEN")
 WORKDIR = Path(os.getenv("WORKDIR"))
 
-# Parametros generales
+# Parametros InfluxDB
+INFLUXDB_HOST = "climacan-influxdb"
+INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")
+INFLUXDB_TIMEOUT = 5
+
 HEADER_API_KEY = {
     "accept": "application/json",
-    "Authorization": f"Api-Key {GRAFCAN_TOKEN}",
+    "Authorization": f"Api-Key {os.getenv('GRAFCAN_TOKEN')}",
 }
 TIMEOUT = 100
 # Numero de copias de ficheros logs
@@ -27,14 +24,6 @@ LOG_BACKUP_PERIOD = 7
 # Tiempo de retencion de cada copia de los ficheros logs
 LOG_RETENTION_PERIOD = "1d"
 
-# Parametros InfluxDB
-INFLUXDB_HOST = "climacan-influxdb"
-INFLUXDB_TIMEOUT = 5
-INFLUXDB_CLIENT = InfluxdbOperation(
-    host=INFLUXDB_HOST,
-    port=INFLUXDB_PORT,
-    timeout=INFLUXDB_TIMEOUT,
-)
 
 GRAFCAN_DATABASE_NAME = "grafcan"
 TASKS_DATABASE_NAME = "tasks"

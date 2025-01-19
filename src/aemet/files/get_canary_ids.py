@@ -11,6 +11,10 @@ import pandas as pd
 import requests
 
 from conf import WORKDIR
+from src.aemet.config.config import (
+    MUNICIPALITIES_EXCEL_PATH,
+    MUNICIPALITIES_JSON_PATH,
+)
 from src.common.functions import normalize_text
 
 
@@ -102,14 +106,14 @@ def main():
     """
     Ejecuta las funciones principales de descarga y procesamiento de municipios.
     """
-    excel_path = WORKDIR / "src/aemet/artifacts/municipalities.xlsx"
-    json_path = WORKDIR / "src/aemet/artifacts/municipalities.json"
 
     # Descargar el archivo Excel
-    download_municipalities_excel(excel_path)
+    download_municipalities_excel(MUNICIPALITIES_EXCEL_PATH)
 
     # Generar el archivo JSON
-    generate_municipalities_json(excel_path, json_path)
+    generate_municipalities_json(
+        MUNICIPALITIES_EXCEL_PATH, MUNICIPALITIES_JSON_PATH
+    )
 
 
 if __name__ == "__main__":

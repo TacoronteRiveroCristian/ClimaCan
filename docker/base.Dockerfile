@@ -31,9 +31,5 @@ RUN chown -R dev_container:dev_container ${WORKDIR} && \
 # Cambiar al usuario sin privilegios
 USER dev_container
 
-# Crear entorno virtual y instalar dependencias
-RUN python3 -m venv .venv && \
-    .venv/bin/pip install --upgrade pip
-
 # Comando de arranque
 CMD ["/bin/bash"]
