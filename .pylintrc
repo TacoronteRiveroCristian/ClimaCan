@@ -437,6 +437,7 @@ disable=raw-checker-failed,
         W1203, # permite usar el f en los strings y loggings
         E0401, # deshabilita el problema de las importaciones
         W0718, # ignora el tratado de excepciones con Exceptions
+        W0719, # Raising too general exception
         E0015, # Unrecognized option found: source-rootsPylint(E0015:unrecognized-option) ????
         C0114, # deshabilita el docstring del inicio del script
         W0201, # Attribute defined outside

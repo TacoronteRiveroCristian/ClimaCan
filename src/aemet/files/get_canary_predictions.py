@@ -9,7 +9,7 @@ from time import sleep
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 
-from conf import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
+from common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.aemet.classes.data_handler import AemetPredictionHandler
 from src.aemet.classes.end_points import AemetEndPoints
 from src.aemet.config.config import MUNICIPALITIES_JSON_PATH, TOKEN

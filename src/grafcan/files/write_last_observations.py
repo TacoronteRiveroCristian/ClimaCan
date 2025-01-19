@@ -7,27 +7,33 @@ from pathlib import Path
 from typing import Dict, List
 
 import pandas as pd
+from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
+from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 
-from conf import ERROR_HANDLER, GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS
-from conf import GRAFCAN__LOG_FILE_SCRIPT_WRITE_LAST_OBSERVATIONS as LOG_FILE
-from conf import GRAFCAN_DATABASE_NAME
-from conf import INFLUXDB_CLIENT as client
-from conf import LOG_BACKUP_PERIOD, LOG_RETENTION_PERIOD
+from src.grafcan.classes.fetch_observations_last import FetchObservationsLast
+from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.common.functions import normalize_text
 from src.grafcan.classes.Exceptions import DataFetchError
-from src.grafcan.classes.FetchObservationsLast import FetchObservationsLast
+from src.grafcan.config.config import CSV_FILE_CLASSES_METADATA_STATIONS, TOKEN
 
 # Configurar logger
-handler = LoggingHandler(
-    log_file=LOG_FILE,
-    log_backup_period=LOG_BACKUP_PERIOD,
-    log_retention_period=LOG_RETENTION_PERIOD,
-)
-LOGGER = handler.configure_logger()
+logging_handler = LoggingHandler()
+stream = logging_handler.create_stream_handler()
+logger = logging_handler.add_handlers([stream])
+
+# Configurar manejador de errores
+error_handler = ErrorHandler()
 
 # Crear el objeto FetchObservationsLast
-fetcher = FetchObservationsLast()
+fetcher = FetchObservationsLast(TOKEN)
+
+# Configurar el cliente de InfluxDB
+client = InfluxdbOperation(
+    host=INFLUXDB_HOST,
+    port=INFLUXDB_PORT,
+    timeout=INFLUXDB_TIMEOUT,
+)
 
 
 def read_stations_csv(csv_file: Path) -> pd.DataFrame:
@@ -39,7 +45,7 @@ def read_stations_csv(csv_file: Path) -> pd.DataFrame:
     :return: DataFrame de Pandas con los datos del archivo CSV.
     :rtype: pd.DataFrame
     """
-    LOGGER.info(f"Leyendo archivo CSV desde {csv_file}")
+    logger.info(f"Leyendo archivo CSV desde {csv_file}")
     df = pd.read_csv(csv_file, index_col=None).set_index("thing_id")
     df.sort_index(inplace=True)
 
@@ -51,7 +57,9 @@ def read_stations_csv(csv_file: Path) -> pd.DataFrame:
             f"Ha ocurrido un error al intentar descartar las columnas '^Unnamed'.: {e}"
         ) from e
 
-    LOGGER.info(f"Archivo CSV leido correctamente, {len(df)} estaciones cargadas.")
+    logger.info(
+        f"Archivo CSV leido correctamente, {len(df)} estaciones cargadas."
+    )
     return df
 
 
@@ -112,14 +120,14 @@ def add_features_to_points(
 
 
 if __name__ == "__main__":
-    LOGGER.info("Inicio del proceso de registro de observaciones en InfluxDB.")
+    logger.info("Inicio del proceso de registro de observaciones en InfluxDB.")
 
     # Leer el DataFrame de los metadatos de las estaciones
-    df_stations = read_stations_csv(GRAFCAN__CSV_FILE_CLASSES_METADATA_STATIONS)
+    df_stations = read_stations_csv(CSV_FILE_CLASSES_METADATA_STATIONS)
 
     # Recorrer cada fila para obtener el indice y los metadatos de cada estacion
     for index, row in df_stations.iterrows():
-        LOGGER.info(f"Procesando estacion con ID '{index}'.")
+        logger.info(f"Procesando estacion con ID '{index}'.")
 
         try:
             # Obtener la observacion más reciente de la estacion correspondiente
@@ -136,29 +144,29 @@ if __name__ == "__main__":
             # Comprobar si hay datos disponibles, sino continuar con la siguiente estacion
             if len(data_points) == 0:
                 warning_message = f"No se han encontrado datos para la estacion con ID '{index}'."
-                ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
+                logger.warning(warning_message)
                 continue
 
-            LOGGER.info(
+            logger.info(
                 f"Registrando observacion en measurement '{measurement}' para estacion con ID '{index}'."
             )
 
             # Registrar datos en el servidor InfluxDB
             client.write_points(
-                database=GRAFCAN_DATABASE_NAME,
+                database="grafcan",
                 points=data_points,
             )
-            LOGGER.info(
+            logger.info(
                 f"Observacion registrada correctamente en InfluxDB para measurement '{measurement}'."
             )
 
         except DataFetchError as e:
             warning_message = f"Error al obtener datos para la estacion con ID '{index}': '{e}'"
-            ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
+            logger.warning(warning_message)
             continue  # Continuar con la siguiente estacion en caso de error de obtencion de datos
         except Exception as e:
             warning_message = f"Error inesperado al procesar la estacion con ID '{index}': '{e}'"
-            ERROR_HANDLER.handle_error(warning_message, LOGGER, exit_code=2)
+            logger.warning(warning_message)
             continue  # Continuar con la siguiente estacion en caso de error general
 
-    LOGGER.info("Proceso de registro de observaciones completado.\n")
+    logger.info("Proceso de registro de observaciones completado.\n")

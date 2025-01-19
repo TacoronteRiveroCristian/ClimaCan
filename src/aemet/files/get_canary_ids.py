@@ -10,7 +10,6 @@ from typing import Union
 import pandas as pd
 import requests
 
-from conf import WORKDIR
 from src.aemet.config.config import (
     MUNICIPALITIES_EXCEL_PATH,
     MUNICIPALITIES_JSON_PATH,

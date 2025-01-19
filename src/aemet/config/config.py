@@ -4,7 +4,7 @@ Fichero de configuracion para la seccion AEMET.
 
 import os
 
-from conf import WORKDIR
+from common.config import WORKDIR
 
 TOKEN = os.getenv("AEMET_TOKEN")
 
