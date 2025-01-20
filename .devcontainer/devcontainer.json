@@ -1,7 +1,6 @@
 {
     "name": "ClimaCan",
     "remoteUser": "dev_container",
-    "initializeCommand": "docker pull cristiantr/dev_container_image",
     "dockerComposeFile": "../docker/docker-compose.yaml",
     "service": "climacan-dev",
     "workspaceFolder": "/workspaces/ClimaCan",

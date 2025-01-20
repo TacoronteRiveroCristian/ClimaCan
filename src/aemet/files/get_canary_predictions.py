@@ -8,11 +8,12 @@ from time import sleep
 
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
+from influxdb.client import InfluxDBClientError
 
-from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.aemet.classes.data_handler import AemetPredictionHandler
 from src.aemet.classes.end_points import AemetEndPoints
 from src.aemet.config.config import MUNICIPALITIES_JSON_PATH, TOKEN
+from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 
 # Configuracion del script
 TIME_SLEEP = 1  # Tiempo de espera inicial entre intentos, en segundos
@@ -20,7 +21,10 @@ MAX_RETRIES = 10  # Número maximo de intentos para cada municipio
 
 
 def read_and_write_predictions(
-    code: str, municipalitie: str, handler: AemetPredictionHandler, client: InfluxdbOperation
+    code: str,
+    municipalitie: str,
+    handler: AemetPredictionHandler,
+    client: InfluxdbOperation,
 ) -> None:
     """
     Obtiene las predicciones de un municipio según su codigo y las registra en un servidor InfluxDB.
@@ -80,11 +84,19 @@ def fetch_predictions(
         while retries < MAX_RETRIES and not success:
             try:
                 # Llamar a la funcion para obtener y registrar las predicciones
-                read_and_write_predictions(code, municipalitie["municipalities"], handler, client)
+                read_and_write_predictions(
+                    code, municipalitie["municipalities"], handler, client
+                )
                 success = True  # Si no ocurre un error, se considera exitoso
                 logger.info(
                     f"Se han obtenido las predicciones para el municipio: '{municipalitie['municipalities']}'"
                 )
+            except InfluxDBClientError as e:
+                logger.error(
+                    f"Error al registrar las predicciones para el municipio '{municipalitie['municipalities']}': {e}. "
+                    f"Se debe de revisar el formato de los datos debido a los cambios constantes de la API AEMET."
+                )
+                break
             except Exception as e:
                 retries += 1
                 logger.error(

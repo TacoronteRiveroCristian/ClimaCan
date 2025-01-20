@@ -75,6 +75,8 @@ def main() -> None:
         CronTrigger.from_crontab("0 23 * * 1,3,5"),
         name="Update Historical Locations",
     )
+
+    run_write_last_observations()
     scheduler.add_job(
         run_write_last_observations,
         CronTrigger.from_crontab("*/10 * * * *"),

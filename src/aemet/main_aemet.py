@@ -73,22 +73,15 @@ if __name__ == "__main__":
     # Configurar el scheduler
     scheduler = BlockingScheduler()
 
-    if not MUNICIPALITIES_JSON_PATH.exists():
-        logger.info(
-            "El archivo de configuracion de los municipios no existe. Se va a generar uno nuevo."
-        )
-        generate_grafana_yaml(
-            json_file_path=MUNICIPALITIES_JSON_PATH,
-            output_file=DATABASE_PROVISIONING_YAML_PATH,
-        )
-
     # Programar las tareas
+    run_update_canary_municipalities()
     scheduler.add_job(
         run_update_canary_municipalities,
         CronTrigger.from_crontab("0 3 1 * *"),
         name="Monthly Update Canary Municipalities Task",
     )
 
+    run_canary_aemet_prediction()
     scheduler.add_job(
         run_canary_aemet_prediction,
         CronTrigger.from_crontab("0 4 * * *"),
