@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 from requests import get
 
-from src.grafcan.classes.Exceptions import DataFetchError
+from grafcan.classes.exceptions import DataFetchError
 
 
 class FetchObservationsLast:

@@ -14,7 +14,7 @@ from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 from src.grafcan.classes.fetch_observations_last import FetchObservationsLast
 from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.common.functions import normalize_text
-from src.grafcan.classes.Exceptions import DataFetchError
+from grafcan.classes.exceptions import DataFetchError
 from src.grafcan.config.config import CSV_FILE_CLASSES_METADATA_STATIONS, TOKEN
 
 # Configurar logger
