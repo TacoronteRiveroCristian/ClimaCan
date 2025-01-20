@@ -8,7 +8,7 @@ from apscheduler.triggers.cron import CronTrigger
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
 
-from common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
+from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.common.task_manager import TaskManager
 
 # Instanciar cliente de InfluxDB

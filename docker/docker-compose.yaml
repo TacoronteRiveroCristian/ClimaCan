@@ -6,8 +6,8 @@ services:
     container_name: climacan-dev
     env_file:
       - ../.env
-    # command: /bin/python3 /workspaces/ClimaCan/src/grafcan/main_grafcan.py
     command: sleep infinity
+    # command: /bin/bash /workspaces/ClimaCan/run.sh
     restart: unless-stopped
     networks:
       - climacan_network

@@ -28,8 +28,14 @@ RUN chown -R dev_container:dev_container ${WORKDIR} && \
     chmod -R 770 ${WORKDIR} && \
     chmod 600 ${WORKDIR}/.env
 
+# Dar permisos de ejecucion al archivo .sh
+RUN chmod +x run.sh
+
 # Cambiar al usuario sin privilegios
 USER dev_container
+
+# Instalar dependencias
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Comando de arranque
 CMD ["/bin/bash"]

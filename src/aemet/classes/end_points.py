@@ -1,4 +1,5 @@
 """
+Modulo para manejar los endpoints de la API de AEMET.
 """
 
 
