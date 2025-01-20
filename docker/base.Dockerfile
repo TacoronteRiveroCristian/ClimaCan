@@ -1,5 +1,7 @@
-FROM cristiantr/dev_container_image:latest
+# Usa la imagen oficial de Python 3.10.12 como base
+FROM python:3.10.12-slim
 
+# Variables de build (se pueden pasar al construir la imagen)
 ARG GITHUB_USERNAME
 ARG GITHUB_GMAIL
 ARG GRAFCAN_TOKEN
@@ -7,35 +9,31 @@ ARG WORKDIR="/workspaces/ClimaCan"
 
 # Configurar la zona horaria de Canarias
 ENV TZ=Atlantic/Canary
-RUN sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ | sudo tee /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Establecer variables de entorno
+# Variables de entorno
 ENV WORKDIR=${WORKDIR}
 ENV GRAFCAN_TOKEN=${GRAFCAN_TOKEN}
 ENV PYTHONPATH=${PYTHONPATH}:${WORKDIR}
 
-# Crear usuario sin privilegios
-USER root
-
-# Configurar credenciales de GitHub (antes del COPY)
-RUN git config --global user.name "${GITHUB_USERNAME}" && \
-    git config --global user.email "${GITHUB_GMAIL}"
-
-# Copiar archivos y configurar permisos
+# Crear directorio de trabajo
 WORKDIR ${WORKDIR}
-COPY . .
-RUN chown -R dev_container:dev_container ${WORKDIR} && \
-    chmod -R 770 ${WORKDIR} && \
-    chmod 600 ${WORKDIR}/.env
 
-# Dar permisos de ejecucion al archivo .sh
-RUN chmod +x run.sh
+# Instalar herramientas necesarias
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Cambiar al usuario sin privilegios
-USER dev_container
+# Copiar archivo de dependencias
+COPY requirements.txt .
 
 # Instalar dependencias
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Comando de arranque
+# Establecer usuario por defecto
+RUN useradd -ms /bin/bash dev_container
+USER dev_container
+
+# Comando por defecto
 CMD ["/bin/bash"]

@@ -8,6 +8,11 @@ services:
       - ../.env
     command: sleep infinity
     # command: /bin/bash /workspaces/ClimaCan/run.sh
+    # Crear volumen del proyecto para actualizar los ficheros. Hay elementos
+    # que se deben de enviar a otros contenedores y de esta forma siempre se
+    # encuentran actualizados
+    volumes:
+      - ..:/workspaces/ClimaCan
     restart: unless-stopped
     networks:
       - climacan_network

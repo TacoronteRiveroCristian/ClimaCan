@@ -26,7 +26,7 @@ logger = logging_handler.add_handlers([stream])
 # Instanciar manejador de tareas
 task_manager = TaskManager(
     logger=logger,
-    environment="/usr/bin/python3",
+    environment="/usr/local/bin/python3",
     client=client,
     database="grafcan_tasks",
 )
