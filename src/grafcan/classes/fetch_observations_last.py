@@ -8,8 +8,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 from requests import get
 
-from conf import HEADER_API_KEY, TIMEOUT
-from src.grafcan.classes.Exceptions import DataFetchError
+from src.grafcan.classes.exceptions import DataFetchError
 
 
 class FetchObservationsLast:
@@ -18,11 +17,19 @@ class FetchObservationsLast:
     según su ID y organizarlo en un DataFrame.
     """
 
-    def __init__(self):
+    def __init__(self, token: str, timeout: int = 10) -> None:
         """
         Inicializa la clase con la URL de la API.
+        :param token: Token de autenticación para la API de Grafcan.
+        :type token: str
+        :param timeout: Tiempo máximo de espera para las solicitudes a la API.
+        :type timeout: int
         """
-        self.url = "https://sensores.grafcan.es/api/v1.0/observations_last/?thing="
+        self.url = (
+            "https://sensores.grafcan.es/api/v1.0/observations_last/?thing="
+        )
+        self.token = token
+        self.timeout = timeout
 
     def _get_response(self, thing_id: int) -> Optional[List[dict]]:
         """
@@ -35,8 +42,12 @@ class FetchObservationsLast:
         :raises DataFetchError: Si ocurre un error al obtener los datos de la API.
         """
         url = self.url + str(thing_id)
+        header = {
+            "accept": "application/json",
+            "Authorization": f"Api-Key {self.token}",
+        }
         try:
-            response = get(url, headers=HEADER_API_KEY, timeout=TIMEOUT)
+            response = get(url, headers=header, timeout=self.timeout)
             response.raise_for_status()
             observations = response.json().get("observations", [])
 
@@ -88,7 +99,9 @@ class FetchObservationsLast:
         )
 
         # Pivotar el DataFrame para que cada métrica sea una columna, usando 'resultTime' como índice
-        df_pivoted = df.pivot(index="resultTime", columns="column_name", values="value")
+        df_pivoted = df.pivot(
+            index="resultTime", columns="column_name", values="value"
+        )
 
         # Convertir el índice de tiempo a formato datetime
         df_pivoted.index = pd.to_datetime(df_pivoted.index)
@@ -118,7 +131,9 @@ class FetchObservationsLast:
                 "time": observation["resultTime"],
                 "fields": {
                     self._clean_column_name(
-                        observation["name"] + "_" + observation["unitOfMeasurement"]
+                        observation["name"]
+                        + "_"
+                        + observation["unitOfMeasurement"]
                     ).strip("_"): observation["value"]
                 },
             }
@@ -126,9 +141,3 @@ class FetchObservationsLast:
         ]
 
         return points
-
-
-if __name__ == "__main__":
-    fetcher = FetchObservationsLast()
-    points = fetcher.fetch_last_observation(2)
-    print(points)

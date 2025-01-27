@@ -1,3 +1,4 @@
+aemet-datasources.yaml
 volumes/influxdb
 *.json
 *.xlsx
@@ -5,7 +6,7 @@ volumes/influxdb
 **/log/*
 **/logs/*
 *.ipynb
-!src/aemet/chore.ipynb
+*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
