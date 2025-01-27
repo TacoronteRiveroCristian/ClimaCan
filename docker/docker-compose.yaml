@@ -1,12 +1,11 @@
 services:
   climacan-dev:
+    container_name: climacan-dev
     build:
       context: ..
-      dockerfile: docker/base.Dockerfile
-    container_name: climacan-dev
-    env_file:
-      - ../.env
-    # command: /bin/python3 /workspaces/ClimaCan/src/grafcan/main_grafcan.py
+      dockerfile: docker/climacan.Dockerfile
+    volumes:
+      - ..:/workspaces/climacan
     command: sleep infinity
     restart: unless-stopped
     networks:
@@ -16,13 +15,13 @@ services:
     image: influxdb:1.8
     container_name: climacan-influxdb
     ports:
-      - "${INFLUXDB_PORT:-8096}:${INFLUXDB_PORT:-8096}"
+      - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
     volumes:
       - ./volumes/influxdb/data:/var/lib/influxdb
       - ./volumes/influxdb/db:/var/lib/influxdb/backup
     environment:
       - TZ=Atlantic/Canary
-      - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT:-8096}  # Cambiar el puerto interno a 8096
+      - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT}
     depends_on:
       - climacan-dev
     restart: unless-stopped
@@ -33,7 +32,7 @@ services:
     image: grafana/grafana
     container_name: climacan-grafana
     ports:
-      - "${GRAFANA_PORT:-3010}:${GRAFANA_PORT:-3010}"
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
     volumes:
       - ./volumes/grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./volumes/grafana/provisioning:/etc/grafana/provisioning
@@ -43,9 +42,9 @@ services:
       - TZ=Atlantic/Canary
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_PATHS_LOGS=/var/log/grafana
-      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT:-3010}  # Cambiar el puerto interno de Grafana a 3010
-      - GRAFANA_PORT=${GRAFANA_PORT:-3010}
-      - INFLUXDB_PORT=${INFLUXDB_PORT:-8096}
+      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT}
+      - GRAFANA_PORT=${GRAFANA_PORT}
+      - INFLUXDB_PORT=${INFLUXDB_PORT}
     depends_on:
       - climacan-dev
     restart: unless-stopped

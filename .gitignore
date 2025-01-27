@@ -1,4 +1,6 @@
 volumes/influxdb
+*.json
+*.xlsx
 **/data/*
 **/log/*
 **/logs/*
