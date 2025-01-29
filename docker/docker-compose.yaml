@@ -6,6 +6,8 @@ services:
       dockerfile: docker/climacan.Dockerfile
     volumes:
       - ..:/workspaces/climacan
+    env_file:
+      - .env
     command: sleep infinity
     restart: unless-stopped
     networks:

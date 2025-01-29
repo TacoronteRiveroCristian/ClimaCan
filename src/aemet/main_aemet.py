@@ -6,7 +6,7 @@ con el servicio AEMET.
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
-from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
+from ctrutils.handler.logging.logging_handler import LoggingHandler
 
 from src.aemet.config.config import (
     DATABASE_PROVISIONING_YAML_PATH,

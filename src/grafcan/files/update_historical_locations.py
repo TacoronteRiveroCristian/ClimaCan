@@ -3,7 +3,7 @@ Script que se encarga de obtener los metadatos de las estaciones de Grafcan
 y guardarlos en un archivo CSV.
 """
 
-from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
+from ctrutils.handler.logging.logging_handler import LoggingHandler
 
 from src.grafcan.classes.station_metadata_fetcher import StationMetadataFetcher
 from src.grafcan.config.config import CSV_FILE_CLASSES_METADATA_STATIONS, TOKEN

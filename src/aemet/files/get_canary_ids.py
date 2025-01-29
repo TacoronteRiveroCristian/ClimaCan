@@ -1,5 +1,6 @@
 """
-Script para obtener el codigo de cada municipio canario de la API de AEMET.
+Script para obtener el codigo de cada municipio canario de la API de AEMET
+y guardarlo en un archivo JSON.
 """
 
 import json

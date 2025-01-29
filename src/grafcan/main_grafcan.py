@@ -5,7 +5,7 @@ Script principal que inicia la ejecucion de los procesos relacionados con Grafca
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
-from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
+from ctrutils.handler.logging.logging_handler import LoggingHandler
 
 from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.common.task_manager import TaskManager

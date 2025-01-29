@@ -6,15 +6,11 @@ import os
 from pathlib import Path
 
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
-from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
-
-# Manejador de errores, necesario para capturar la salida stderr de los scripts principales
-ERROR_HANDLER = ErrorHandler()
 
 # Variables de entorno
 INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")
 GRAFCAN_TOKEN = os.getenv("GRAFCAN_TOKEN")
-WORKDIR = Path(os.getenv("WORKDIR"))
+WORKDIR = Path(os.getenv("PYTHONPATH"))
 
 # Parametros generales
 HEADER_API_KEY = {

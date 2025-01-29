@@ -1,13 +1,14 @@
 """
-Script para obtener las predicciones climatologicas de cada municipio canario desde la API de AEMET
-y registrarlas en un servidor InfluxDB.
+Script para obtener las predicciones climatologicas de los municipios
+especificados en un archivo JSON desde la API de AEMET y registrarlas
+en un servidor InfluxDB.
 """
 
 import json
 from time import sleep
 
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
-from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
+from ctrutils.handler.logging.logging_handler import LoggingHandler
 from influxdb.client import InfluxDBClientError
 
 from src.aemet.classes.data_handler import AemetPredictionHandler

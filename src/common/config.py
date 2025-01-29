@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 # Directorio de trabajo
-WORKDIR = Path(os.getenv("WORKDIR"))
+WORKDIR = Path(os.getenv("PYTHONPATH"))
 
 # Parametros InfluxDB
 INFLUXDB_HOST = "climacan-influxdb"

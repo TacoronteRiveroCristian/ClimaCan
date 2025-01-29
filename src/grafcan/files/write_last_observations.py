@@ -8,22 +8,18 @@ from typing import Dict, List
 
 import pandas as pd
 from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
-from ctrutils.handlers.ErrorHandlerBase import ErrorHandler
-from ctrutils.handlers.LoggingHandlerBase import LoggingHandler
+from ctrutils.handler.logging.logging_handler import LoggingHandler
 
-from src.grafcan.classes.fetch_observations_last import FetchObservationsLast
 from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 from src.common.functions import normalize_text
 from src.grafcan.classes.exceptions import DataFetchError
+from src.grafcan.classes.fetch_observations_last import FetchObservationsLast
 from src.grafcan.config.config import CSV_FILE_CLASSES_METADATA_STATIONS, TOKEN
 
 # Configurar logger
 logging_handler = LoggingHandler()
 stream = logging_handler.create_stream_handler()
 logger = logging_handler.add_handlers([stream])
-
-# Configurar manejador de errores
-error_handler = ErrorHandler()
 
 # Crear el objeto FetchObservationsLast
 fetcher = FetchObservationsLast(TOKEN)
