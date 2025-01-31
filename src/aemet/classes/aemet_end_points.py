@@ -15,6 +15,10 @@ class AEMETEndpoints:
     PREDICCION_MUNICIPIO_HORARIA = (
         "/api/prediccion/especifica/municipio/horaria/{municipio}"
     )
+    OBSERVAION_CONVENCIONAL_TODAS = "/api/observacion/convencional/todas"
+    OBSERVAION_CONVENCIONAL_IDEMA = (
+        "/api/observacion/convencional/datos/estacion/{idema}"
+    )
 
     @classmethod
     def prediccion_municipio_horaria(cls, municipio: str) -> str:
@@ -24,3 +28,20 @@ class AEMETEndpoints:
         :return: URL completa con el municipio rellenado.
         """
         return f"{cls.BASE_URL}{cls.PREDICCION_MUNICIPIO_HORARIA.format(municipio=municipio)}"
+
+    @classmethod
+    def observacion_convencional_todas(cls) -> str:
+        """
+        Devuelve la URL completa del endpoint de observación convencional para todas las estaciones.
+        :return: URL completa.
+        """
+        return f"{cls.BASE_URL}{cls.OBSERVAION_CONVENCIONAL_TODAS}"
+
+    @classmethod
+    def observacion_convencional_idema(cls, idema: str) -> str:
+        """
+        Devuelve la URL completa del endpoint de observación convencional para una estacion.
+        :param idema: Codigo de la estacion.
+        :return: URL completa con el idema rellenado.
+        """
+        return f"{cls.BASE_URL}{cls.OBSERVAION_CONVENCIONAL_IDEMA.format(idema=idema)}"

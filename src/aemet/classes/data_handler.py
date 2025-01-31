@@ -2,7 +2,7 @@
 Clases para manejar las consultas de predicciones provenientes de la API de AEMET.
 """
 
-from typing import Dict
+from typing import Any, Dict, List
 
 import pandas as pd
 import requests
@@ -15,35 +15,57 @@ class AemetBaseHandler:
 
     def __init__(self, token: str) -> None:
         """
-        Clase base para manejar las consultas a la API de AEMET.
+        Inicializa la clase con el token de autenticacion.
 
-        :param token: str - Token de autorización para la API de AEMET.
+        :param token: str - Token de autorizacion para la API de AEMET.
         """
         self.token = token
         self.headers = {"Authorization": f"Bearer {self.token}"}
         self.timeout = 20
 
-    def run_query(self, full_url: str) -> Dict:
+    def fetch_data(self, full_url: str) -> Dict[str, List[Dict[str, Any]]]:
         """
-        Ejecuta una consulta a la API para una URL completa.
+        Ejecuta una consulta a la API de AEMET y retorna los datos y metadatos en un solo diccionario.
 
         :param full_url: str - URL completa de la API a consultar.
-        :return: Dict con los datos obtenidos o None si hubo un error.
+        :return: Dict[str, List[Dict[str, Any]]] - Diccionario con 'data' y 'metadata'.
+        :raises ValueError: Si la consulta no retorna una respuesta valida.
         """
-        response = requests.get(
-            full_url, headers=self.headers, timeout=self.timeout
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                full_url, headers=self.headers, timeout=self.timeout
+            )
+            response.raise_for_status()  # Verifica si hubo errores HTTP
 
-        data = response.json()
-        data_url = data.get("datos")
+            response = response.json()
+            state = response.get("estado")
 
-        if data_url:
-            data_response = requests.get(data_url, timeout=self.timeout)
-            data_response.raise_for_status()
-            return data_response.json()
-        else:
-            raise ValueError("No se encontraron datos para la consulta.")
+            if state != 200:
+                raise ValueError(f"Estado de la consulta erroneo: {state}")
+
+            # Obtener los datos y metadatos de la respuesta
+            data = requests.get(
+                response.get("datos"),
+                headers=self.headers,
+                timeout=self.timeout,
+            ).json()
+            metadata = requests.get(
+                response.get("metadatos"),
+                headers=self.headers,
+                timeout=self.timeout,
+            ).json()
+
+            return {
+                "data": data or [{}],
+                "metadata": metadata or [{}],
+            }
+
+        except requests.RequestException as e:
+            raise ValueError(f"Error en la consulta a la API: {e}") from e
+        except ValueError as e:
+            raise ValueError(
+                f"Error al procesar la respuesta de la API: {e}"
+            ) from e
 
 
 class AemetPredictionHandler(AemetBaseHandler):
@@ -86,7 +108,7 @@ class AemetPredictionHandler(AemetBaseHandler):
         :raises ValueError: Siempre que se invoque.
         """
         raise ValueError(
-            f"El valor '{value}' no tiene una longitud válida de 4 caracteres."
+            f"El valor '{value}' no tiene una longitud valida de 4 caracteres."
         )
 
     @staticmethod
@@ -112,18 +134,19 @@ class AemetPredictionHandler(AemetBaseHandler):
         self, full_url: str
     ) -> Dict[str, pd.DataFrame]:
         """
-        Procesa los datos de predicción para una URL completa específica.
+        Procesa los datos de prediccion para una URL completa específica.
 
-        :param full_url: str - URL completa con endpoint y parámetros.
+        :param full_url: str - URL completa con endpoint y parametros.
         :return: Diccionario con DataFrames de los datos procesados por medida.
         """
-        data = self.run_query(full_url)
-        if not data:
+        response = self.fetch_data(full_url)
+        # Comprobar si la respuesta contiene datos
+        if response["data"] == [{}]:
             raise ValueError(
                 f"No se pudieron obtener datos para la URL {full_url}."
             )
 
-        pred = data[0].get("prediccion", {}).get("dia", [])
+        pred = response["data"][0].get("prediccion", {}).get("dia", [])
         results = {}
 
         for day in pred:
@@ -138,7 +161,7 @@ class AemetPredictionHandler(AemetBaseHandler):
                     # Pasar lista de puntos a formato DataFrame
                     df = pd.DataFrame(value)
 
-                    # Agregar la fecha de predicción como columna
+                    # Agregar la fecha de prediccion como columna
                     df["time"] = day_of_pred
                     df.set_index("time", inplace=True)
                     df.index = pd.to_datetime(df.index)
@@ -166,7 +189,7 @@ class AemetPredictionHandler(AemetBaseHandler):
                             "Se ha encontrado la columna 'dato', pero no se ha encontrado la columna 'periodo'."
                         )
 
-                    # Comprobar que el DataFrame no está vacío
+                    # Comprobar que el DataFrame no esta vacío
                     if df.empty:
                         continue
 
@@ -184,10 +207,18 @@ class AemetPredictionHandler(AemetBaseHandler):
             if dict_of_pred:
                 results[day_of_pred] = dict_of_pred
 
-        # Comprobar que el diccionario no está vacío
+        # Comprobar que el diccionario no esta vacío
         if not results:
             raise ValueError(
                 f"No se encontraron datos procesados para la URL {full_url}."
             )
 
         return results
+
+
+class AemetObservationHandler(AemetBaseHandler):
+    """
+    Clase para manejar las observaciones de la API de AEMET.
+    """
+
+    pass
