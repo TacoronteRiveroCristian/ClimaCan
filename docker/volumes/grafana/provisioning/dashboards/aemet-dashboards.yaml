@@ -1,0 +1,18 @@
+apiVersion: 1
+providers:
+  - name: 'Hourly-Forecast-by-Municipality'
+    orgId: 1
+    folder: 'AEMET'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/dashboards/Hourly-Forecast-by-Municipality.json
+  - name: 'Conventional-Observations'
+    orgId: 2
+    folder: 'AEMET'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/dashboards/Conventional-Observations.json
