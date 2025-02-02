@@ -3,7 +3,7 @@ Clase para manejar los endpoints de la API de AEMET
 """
 
 
-class AEMETEndpoints:
+class AemetEndPoints:
     """
     Clase para manejar los endpoints de la API de AEMET.
     Proporciona metodos para generar las URLs completas con los parametros necesarios.

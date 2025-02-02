@@ -11,8 +11,8 @@ from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 from ctrutils.handler.logging.logging_handler import LoggingHandler
 from influxdb.client import InfluxDBClientError
 
+from src.aemet.classes.aemet_end_points import AemetEndPoints
 from src.aemet.classes.data_handler import AemetPredictionHandler
-from src.aemet.classes.end_points import AemetEndPoints
 from src.aemet.config.config import MUNICIPALITIES_JSON_PATH, TOKEN
 from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
 
@@ -36,7 +36,7 @@ def read_and_write_predictions(
     :return: None
     """
     # Crear el endpoint y obtener las predicciones para el municipio correspondiente
-    url = AemetEndPoints.time_municipality_prediction(code)
+    url = AemetEndPoints.prediccion_municipio_horaria(code)
     data_frames = handler.process_municipality_data(url)
 
     # Iterar cada DataFrame y registrarlo en el servidor InfluxDB

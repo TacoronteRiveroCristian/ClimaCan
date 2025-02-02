@@ -37,7 +37,7 @@ task_manager = TaskManager(
 )
 
 
-def run_canary_aemet_prediction():
+def run_canary_aemet_prediction() -> None:
     """
     Funcion principal que ejecuta la tarea AEMET para predicciones de Canarias.
     """
@@ -49,7 +49,7 @@ def run_canary_aemet_prediction():
     )
 
 
-def run_update_canary_municipalities():
+def run_update_canary_municipalities() -> None:
     """
     Funcion principal que ejecuta la tarea para actualizar la lista de codigos
     de los municipios de Canarias y asi realizar posteriormente las predicciones.
@@ -69,6 +69,19 @@ def run_update_canary_municipalities():
     )
 
 
+def run_get_conventional_observations() -> None:
+    """
+    Funcion principal que ejecuta la tarea para obtener las observaciones
+    convencionales de Canarias.
+    """
+    task_manager.execute_task(
+        task_name="Get Conventional Observations",
+        script_path="src/aemet/files/get_conventional_observations.py",
+        measurement="main_aemet",
+        field="task_success_get_conventional_observations",
+    )
+
+
 if __name__ == "__main__":
     # Configurar el scheduler
     scheduler = BlockingScheduler()
@@ -77,15 +90,22 @@ if __name__ == "__main__":
     run_update_canary_municipalities()
     scheduler.add_job(
         run_update_canary_municipalities,
-        CronTrigger.from_crontab("0 3 1 * *"),
-        name="Monthly Update Canary Municipalities Task",
+        CronTrigger.from_crontab("0 0 1,8,15,21 * 1"),
+        name="Every Week of the Month Update Canary Municipalities Task",
     )
 
     run_canary_aemet_prediction()
     scheduler.add_job(
         run_canary_aemet_prediction,
-        CronTrigger.from_crontab("0 4 * * *"),
-        name="Daily Canary AEMET Prediction Task",
+        CronTrigger.from_crontab("0 */6 * * *"),
+        name="Every 6 hours Canary AEMET Prediction Task",
+    )
+
+    run_get_conventional_observations()
+    scheduler.add_job(
+        run_get_conventional_observations,
+        CronTrigger.from_crontab("0 * * * *"),
+        name="Daily Get Conventional Observations Task",
     )
 
     try:

@@ -11,7 +11,7 @@ from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 from ctrutils.handler.diagnostic.error_handler import ErrorHandler
 from ctrutils.handler.logging.logging_handler import LoggingHandler
 
-from src.aemet.classes.aemet_end_points import AEMETEndpoints
+from src.aemet.classes.aemet_end_points import AemetEndPoints
 from src.aemet.classes.aemet_fields import AemetFields
 from src.aemet.classes.data_handler import AemetBaseHandler
 from src.aemet.config.config import TOKEN
@@ -136,7 +136,7 @@ def main():
     Funcion principal que ejecuta el flujo completo: obtener, procesar y almacenar los datos en InfluxDB.
     """
     try:
-        url = AEMETEndpoints.observacion_convencional_todas()
+        url = AemetEndPoints.observacion_convencional_todas()
         data = fetch_observations(url)
         df = filter_canary_stations(data)
 

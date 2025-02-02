@@ -1,6 +1,6 @@
 aemet-datasources.yaml
 volumes/influxdb
-*.json
+**/artifacts/*
 *.xlsx
 **/data/*
 **/log/*
