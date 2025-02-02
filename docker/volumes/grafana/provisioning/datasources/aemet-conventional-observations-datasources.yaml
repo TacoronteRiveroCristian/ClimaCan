@@ -4,5 +4,5 @@ datasources:
     type: influxdb
     access: proxy
     url: http://climacan-influxdb:$INFLUXDB_PORT
-    database: grafcan
+    database: aemet_conventional_observations
     editable: false
