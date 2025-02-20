@@ -1,6 +1,6 @@
 apiVersion: 1
 datasources:
-  - name: grafcan
+  - name: aemet_conventional_observations
     type: influxdb
     access: proxy
     url: http://climacan-influxdb:$INFLUXDB_PORT

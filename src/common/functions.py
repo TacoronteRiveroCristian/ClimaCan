@@ -44,13 +44,13 @@ def generate_grafana_yaml(
 
     # Construir la estructura para el YAML
     datasources = []
-    for _, details in municipalities.items():
+    for _, municipalitie in municipalities.items():
         datasource = {
-            "name": details["municipalities"],
+            "name": municipalitie,
             "type": "influxdb",
             "access": "proxy",
             "url": influxdb_url,
-            "database": details["municipalities"],
+            "database": municipalitie,
             "editable": False,
         }
         datasources.append(datasource)

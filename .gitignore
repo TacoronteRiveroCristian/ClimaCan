@@ -1,4 +1,3 @@
-aemet-datasources.yaml
 volumes/influxdb
 **/artifacts/*
 *.xlsx
