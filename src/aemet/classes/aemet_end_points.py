@@ -19,6 +19,7 @@ class AemetEndPoints:
     OBSERVAION_CONVENCIONAL_IDEMA = (
         "/api/observacion/convencional/datos/estacion/{idema}"
     )
+    INFORMACION_ESPECIFICA_MUNICIPIOS = "/api/maestro/municipios"
 
     @classmethod
     def prediccion_municipio_horaria(cls, municipio: str) -> str:
@@ -45,3 +46,11 @@ class AemetEndPoints:
         :return: URL completa con el idema rellenado.
         """
         return f"{cls.BASE_URL}{cls.OBSERVAION_CONVENCIONAL_IDEMA.format(idema=idema)}"
+
+    @classmethod
+    def informacion_especifica_municipios(cls) -> str:
+        """
+        Devuelve la URL completa del endpoint de informacion especifica de municipios.
+        :return: URL completa.
+        """
+        return f"{cls.BASE_URL}{cls.INFORMACION_ESPECIFICA_MUNICIPIOS}"

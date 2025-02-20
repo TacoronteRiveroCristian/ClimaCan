@@ -25,11 +25,17 @@ Antes de empezar, asegúrate de tener instalados:
 Crea un archivo `.env` en la raíz del proyecto con las siguientes variables de entorno:
 
 ```bash
-# Configuración del entorno para ClimaCan
-
-# Puertos
+# Grafana
 GRAFANA_PORT=3010
+
+# InfluxDB
 INFLUXDB_PORT=8086
+
+# PostgreSQL
+POSTGRES_DB=my_db
+POSTGRES_USER=my_user
+POSTGRES_PASSWORD=my_pssword
+POSTGRES_PORT=5435
 
 # API Key de Grafcan
 GRAFCAN_TOKEN=YOUR_API_KEY
