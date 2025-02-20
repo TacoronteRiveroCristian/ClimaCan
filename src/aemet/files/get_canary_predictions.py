@@ -86,22 +86,22 @@ def fetch_predictions(
             try:
                 # Llamar a la funcion para obtener y registrar las predicciones
                 read_and_write_predictions(
-                    code, municipalitie["municipalities"], handler, client
+                    code, municipalitie, handler, client
                 )
                 success = True  # Si no ocurre un error, se considera exitoso
                 logger.info(
-                    f"Se han obtenido las predicciones para el municipio: '{municipalitie['municipalities']}'"
+                    f"Se han obtenido las predicciones para el municipio: '{municipalitie}'"
                 )
             except InfluxDBClientError as e:
                 logger.error(
-                    f"Error al registrar las predicciones para el municipio '{municipalitie['municipalities']}': {e}. "
+                    f"Error al registrar las predicciones para el municipio '{municipalitie}': {e}. "
                     f"Se debe de revisar el formato de los datos debido a los cambios constantes de la API AEMET."
                 )
                 break
             except Exception as e:
                 retries += 1
                 logger.error(
-                    f"Error al obtener las predicciones para el municipio '{municipalitie['municipalities']}': {e}. "
+                    f"Error al obtener las predicciones para el municipio '{municipalitie}': {e}. "
                     f"Intento {retries}/{MAX_RETRIES}."
                 )
                 # Aumentar el tiempo de espera progresivamente para evitar saturar la API
@@ -109,7 +109,7 @@ def fetch_predictions(
             finally:
                 if retries == MAX_RETRIES and not success:
                     logger.warning(
-                        f"Se supero el número maximo de intentos para el municipio '{municipalitie['municipalities']}'."
+                        f"Se supero el número maximo de intentos para el municipio '{municipalitie}'."
                     )
 
     logger.info("Proceso completado.")

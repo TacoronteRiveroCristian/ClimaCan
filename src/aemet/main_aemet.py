@@ -58,7 +58,7 @@ def run_update_canary_municipalities() -> None:
     """
     task_manager.execute_task(
         task_name="Update Canary Municipalities",
-        script_path="src/aemet/files/get_canary_ids.py",
+        script_path="src/aemet/files/get_canary_metadata.py",
         measurement="main_aemet",
         field="task_success_update_canary_municipalities",
     )
