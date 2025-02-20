@@ -2,8 +2,11 @@
 Clase para manejar operaciones con PostgreSQL utilizando SQLAlchemy.
 """
 
+from typing import Literal
+
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -43,14 +46,20 @@ class PostgresDBHandler:
             return None
 
     def write_dataframe(
-        self, df: pd.DataFrame, table_name: str, if_exists: str = "append"
+        self,
+        df: pd.DataFrame,
+        table_name: str,
+        if_exists: Literal["fail", "replace", "append"],
     ):
         """
         Guarda un DataFrame en PostgreSQL.
 
         :param df: DataFrame de pandas a guardar.
         :param table_name: Nombre de la tabla en la base de datos.
-        :param if_exists: 'fail', 'replace' o 'append' (por defecto 'append').
+        :param if_exists: Comportamiento si la tabla ya existe:
+            - 'fail': Lanza un error si la tabla ya existe.
+            - 'replace': Elimina la tabla existente y crea una nueva.
+            - 'append': Añade los nuevos datos a la tabla sin modificar los existentes.
         """
         try:
             df.to_sql(table_name, self.engine, if_exists=if_exists, index=False)
@@ -58,7 +67,10 @@ class PostgresDBHandler:
         except SQLAlchemyError as e:
             print(f"Error al escribir en la base de datos: {e}")
 
-    def read_dataframe(self, query: str) -> pd.DataFrame:
+    def read_dataframe(
+        self,
+        query: str,
+    ) -> pd.DataFrame:
         """
         Ejecuta una consulta SQL y devuelve los resultados en un DataFrame.
 

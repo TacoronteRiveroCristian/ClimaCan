@@ -1,12 +1,14 @@
 """
 Script para extraer los metadatos de los municipios canarios desde la API de AEMET
-y registrarlos en un servidor PostgreSQL.
+y registrarlos en un servidor PostgreSQL y archivo JSON.
 
 Los codigos correspondientes a las islas Canarias son el 35 y 38.
 """
 
+import json
 import re
 import time
+from pathlib import Path
 from typing import Dict, List, Union
 
 import pandas as pd
@@ -15,7 +17,7 @@ from ctrutils.handler.diagnostic.error_handler import ErrorHandler
 from ctrutils.handler.logging.logging_handler import LoggingHandler
 
 from src.aemet.classes.aemet_end_points import AemetEndPoints
-from src.aemet.config.config import HEADER
+from src.aemet.config.config import HEADER, MUNICIPALITIES_JSON_PATH
 from src.common.config import postgres_client
 from src.common.functions import normalize_text
 
@@ -115,7 +117,6 @@ def build_dataframe(metadata: List[Dict]) -> pd.DataFrame:
 
     # Quitar "id" del campo id y convertir en índice
     df["id"] = df["id"].str.replace("id", "")
-    df.set_index("id", inplace=True)
 
     # Normalizar nombres de municipios y capitales
     df["capital"] = df["capital"].apply(normalize_txt_with_spaces)
@@ -126,6 +127,24 @@ def build_dataframe(metadata: List[Dict]) -> pd.DataFrame:
     )
 
     return df
+
+
+def save_to_json(data: pd.DataFrame, json_path: Path) -> None:
+    """
+    Guarda el DataFrame en un archivo JSON.
+
+    :param data: DataFrame con los datos a guardar.
+    :type data: pd.DataFrame
+    """
+    logger.info("Guardando DataFrame en un archivo JSON...")
+    # Convertir DataFrame a diccionario
+    data_dict = data.set_index("id")["nombre"].to_dict()
+
+    # Guardar como archivo JSON
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(json_path, "w", encoding="utf-8") as file:
+        json.dump(data_dict, file, indent=4, ensure_ascii=False)
+    logger.info(f"DataFrame guardado correctamente en el path '{json_path}'.")
 
 
 def main() -> None:
@@ -162,8 +181,10 @@ def main() -> None:
 
         # Registrar en PostgreSQL
         logger.info("Registrando datos en PostgreSQL...")
-        postgres_client.write_dataframe(data, "municipios_canarios")
+        postgres_client.write_dataframe(data, "municipios_canarios", "replace")
         logger.info("Datos insertados correctamente en la base de datos.")
+        # Generar archivo JSON
+        save_to_json(data, MUNICIPALITIES_JSON_PATH)
 
     except Exception as e:
         error_msg = f"Error en el proceso: {str(e)}"

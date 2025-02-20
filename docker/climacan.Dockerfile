@@ -28,8 +28,5 @@ COPY requirements.txt .
 # Instalar dependencias
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Cambiar al usuario no root
-USER climacan
-
 # Comando de arranque con Bash interactivo
 CMD ["/bin/bash"]
