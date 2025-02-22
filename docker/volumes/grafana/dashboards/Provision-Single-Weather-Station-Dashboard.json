@@ -18,7 +18,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 2,
+    "id": 5,
     "links": [],
     "liveNow": true,
     "panels": [
@@ -28,7 +28,7 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 8,
+          "h": 9,
           "w": 24,
           "x": 0,
           "y": 0
@@ -40,10 +40,10 @@
             "showLineNumbers": false,
             "showMiniMap": false
           },
-          "content": "<div style=\"display: flex; width: 100%; height: 100%; align-items: center; padding: 20px; box-shadow: none; border-radius: 8px;\">\n  <!-- Content of the table (left side) -->\n  <div style=\"flex: 3; padding-right: 20px;\">\n    <h2 style=\"color: #336699; padding-bottom: 10px;\">Station Information</h2>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Start-up Date:</strong> ${StartUp}</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Serial Number:</strong> ${ThingSerialNumber}</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Anemometer Height (relative to location):</strong> ${ThingAnemometerHeight} m</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Main Purpose:</strong> ${ThingMainPurpose}</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Location Description:</strong> ${LocationDescription}</p>\n    <p style=\"margin: 20px 0;\">\n      <a href=\"https://www.google.com/maps/search/?api=1&query=${LocationLatitude},${LocationLongitude}\" target=\"_blank\" \n         style=\"color: #ffffff; background-color: #336699; padding: 10px 15px; text-decoration: none; border-radius: 5px; \n                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(255, 204, 0, 0.5); \n                transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;\"\n         onmouseover=\"this.style.backgroundColor='#4a80c2'; this.style.color='#e8f0ff'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(255, 204, 0, 0.6)';\"\n         onmouseout=\"this.style.backgroundColor='#336699'; this.style.color='white'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(255, 204, 0, 0.5)';\">\n         View on Google Maps\n      </a>\n    </p>\n  </div>\n  <!-- Image (right side) -->\n  <div style=\"flex: 2; display: flex; justify-content: flex-end; align-items: center;\">\n    <img src=\"/public/my_img/logo-climacan.png\" alt=\"Climacan Logo\" \n         style=\"width: 250px; height: 250px; object-fit: contain; filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.5));\">\n  </div>\n</div>\n",
+          "content": "<div style=\"display: flex; width: 100%; height: 100%; align-items: center; padding: 20px; box-shadow: none; border-radius: 8px;\">\n  <!-- Content of the table (left side) -->\n  <div style=\"flex: 3; padding-right: 20px;\">\n    <h2 style=\"color: #336699; padding-bottom: 10px;\">Información de la Estación</h2>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Puesta en Marcha:</strong> ${StartUp}</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Número de Serie:</strong> ${ThingSerialNumber}</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Altura del Anemómetro (Relativa a la localidad):</strong> ${ThingAnemometerHeight} m</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Propósito principal:</strong> ${ThingMainPurpose}</p>\n    <p style=\"margin: 10px 0;\"><strong style=\"color: #336699; font-size: 1.1em;\">Descripción del Emplazamiento:</strong> ${LocationDescription}</p>\n    <p style=\"margin: 20px 0;\">\n      <a href=\"https://www.google.com/maps/search/?api=1&query=${LocationLatitude},${LocationLongitude}\" target=\"_blank\" \n         style=\"color: #ffffff; background-color: #336699; padding: 10px 15px; text-decoration: none; border-radius: 5px; \n                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(255, 204, 0, 0.5); \n                transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;\"\n         onmouseover=\"this.style.backgroundColor='#4a80c2'; this.style.color='#e8f0ff'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(255, 204, 0, 0.6)';\"\n         onmouseout=\"this.style.backgroundColor='#336699'; this.style.color='white'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(255, 204, 0, 0.5)';\">\n         Ver en Google Maps\n      </a>\n    </p>\n  </div>\n  <!-- Image (right side) -->\n  <div style=\"flex: 2; display: flex; justify-content: flex-end; align-items: center;\">\n    <img src=\"/public/my_img/logo-climacan.png\" alt=\"Climacan Logo\" \n         style=\"width: 250px; height: 250px; object-fit: contain; filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.5));\">\n  </div>\n</div>\n",
           "mode": "html"
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "title": "",
         "transparent": true,
         "type": "text"
@@ -172,7 +172,7 @@
           "h": 8,
           "w": 8,
           "x": 0,
-          "y": 8
+          "y": 9
         },
         "id": 1,
         "options": {
@@ -188,14 +188,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "Air temperature (max.)",
+            "alias": "Temp. Aire (max.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -236,7 +237,7 @@
             "tags": []
           },
           {
-            "alias": "Air temperature avg.)",
+            "alias": "Temp. Aire (avg.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -278,7 +279,7 @@
             "tags": []
           },
           {
-            "alias": "Air temperature (min.)",
+            "alias": "Temp. Aire (min.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -320,7 +321,7 @@
             "tags": []
           }
         ],
-        "title": "Air temperature (min.,max.,avg.)",
+        "title": "Temperatura del Aire (min.,max.,avg.)",
         "transparent": true,
         "type": "timeseries"
       },
@@ -452,7 +453,7 @@
           "h": 8,
           "w": 8,
           "x": 8,
-          "y": 8
+          "y": 9
         },
         "id": 2,
         "options": {
@@ -468,14 +469,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "Relative humidity (avg.)",
+            "alias": "Humedad Relativa (avg.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -517,7 +519,7 @@
             "tags": []
           }
         ],
-        "title": "Relative humidity (avg.)",
+        "title": "Humedad Relativa (avg.)",
         "transparent": true,
         "type": "timeseries"
       },
@@ -648,7 +650,7 @@
           "h": 8,
           "w": 8,
           "x": 16,
-          "y": 8
+          "y": 9
         },
         "id": 3,
         "options": {
@@ -664,14 +666,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "Atmosferic pressure (avg.)",
+            "alias": "Presión Atmosférica (avg.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -713,7 +716,7 @@
             "tags": []
           }
         ],
-        "title": "Atmosferic pressure (avg.)",
+        "title": "Presión Atmosférica (avg.)",
         "transparent": true,
         "type": "timeseries"
       },
@@ -859,7 +862,7 @@
           "h": 8,
           "w": 12,
           "x": 0,
-          "y": 16
+          "y": 17
         },
         "id": 4,
         "options": {
@@ -875,14 +878,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "10 minutes accumulated Rain",
+            "alias": "Lluvia Acumulada (10 min.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -924,7 +928,7 @@
             "tags": []
           }
         ],
-        "title": "10 minutes accumulated rain",
+        "title": "Lluvia Acumulada (10 min.)",
         "transparent": true,
         "type": "timeseries"
       },
@@ -1070,7 +1074,7 @@
           "h": 8,
           "w": 12,
           "x": 12,
-          "y": 16
+          "y": 17
         },
         "id": 5,
         "options": {
@@ -1086,14 +1090,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "Dew point (avg.)",
+            "alias": "Punto de Rocío (avg.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -1135,7 +1140,7 @@
             "tags": []
           }
         ],
-        "title": "Dew point (avg.)",
+        "title": "Punto de Rocío (avg.)",
         "transparent": true,
         "type": "timeseries"
       },
@@ -1308,7 +1313,7 @@
           "h": 8,
           "w": 12,
           "x": 0,
-          "y": 24
+          "y": 25
         },
         "id": 6,
         "options": {
@@ -1324,14 +1329,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "Wind speed (max.)",
+            "alias": "Vel. del Viento (max.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -1373,7 +1379,7 @@
             "tags": []
           },
           {
-            "alias": "Wind speed (avg.)",
+            "alias": "Vel. del Viento (avg.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -1415,7 +1421,7 @@
             "tags": []
           }
         ],
-        "title": "Wind speed (max.,avg.)",
+        "title": "Velocidad del Viento (max.,avg.)",
         "transparent": true,
         "type": "timeseries"
       },
@@ -1476,7 +1482,7 @@
               },
               {
                 "options": {
-                  "from": 23,
+                  "from": 34,
                   "result": {
                     "index": 1,
                     "text": "NE"
@@ -1487,7 +1493,7 @@
               },
               {
                 "options": {
-                  "from": 68,
+                  "from": 69,
                   "result": {
                     "index": 2,
                     "text": "E"
@@ -1498,7 +1504,7 @@
               },
               {
                 "options": {
-                  "from": 113,
+                  "from": 114,
                   "result": {
                     "index": 3,
                     "text": "SE"
@@ -1509,7 +1515,7 @@
               },
               {
                 "options": {
-                  "from": 158,
+                  "from": 159,
                   "result": {
                     "index": 4,
                     "text": "S"
@@ -1520,7 +1526,7 @@
               },
               {
                 "options": {
-                  "from": 203,
+                  "from": 204,
                   "result": {
                     "index": 5,
                     "text": "SW"
@@ -1531,7 +1537,7 @@
               },
               {
                 "options": {
-                  "from": 248,
+                  "from": 249,
                   "result": {
                     "index": 6,
                     "text": "W"
@@ -1542,7 +1548,7 @@
               },
               {
                 "options": {
-                  "from": 293,
+                  "from": 294,
                   "result": {
                     "index": 7,
                     "text": "NW"
@@ -1553,7 +1559,7 @@
               },
               {
                 "options": {
-                  "from": 338,
+                  "from": 339,
                   "result": {
                     "index": 8,
                     "text": "N"
@@ -1601,7 +1607,7 @@
           "h": 8,
           "w": 12,
           "x": 12,
-          "y": 24
+          "y": 25
         },
         "id": 7,
         "options": {
@@ -1615,14 +1621,15 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "mode": "single",
             "sort": "none"
           }
         },
-        "pluginVersion": "11.3.0",
+        "pluginVersion": "11.5.2",
         "targets": [
           {
-            "alias": "Wind direction (avg.)",
+            "alias": "Dirección del Viento (avg.)",
             "datasource": {
               "type": "influxdb",
               "uid": "PF51C1400B5BC6B54"
@@ -1664,7 +1671,7 @@
             "tags": []
           }
         ],
-        "title": "Wind direction (avg.)",
+        "title": " (avg.)",
         "transparent": true,
         "type": "timeseries"
       }
@@ -1844,6 +1851,6 @@
     "timezone": "Atlantic/Canary",
     "title": "Single Weather Station",
     "uid": "fe47zbsgzr0u8d",
-    "version": 2,
+    "version": 4,
     "weekStart": ""
   }
