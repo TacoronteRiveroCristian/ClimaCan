@@ -9,6 +9,10 @@ from src.common.postgres_db_handler import PostgresDBHandler
 # Directorio de trabajo
 WORKDIR = Path(os.getenv("WORKDIR"))
 
+# Token y chatID para alertas de telegram si se requiere
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
 # Parametros InfluxDB
 INFLUXDB_HOST = "climacan-influxdb"
 INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")

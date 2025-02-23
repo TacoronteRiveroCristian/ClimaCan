@@ -12,7 +12,13 @@ from src.aemet.config.config import (
     DATABASE_PROVISIONING_YAML_PATH,
     MUNICIPALITIES_JSON_PATH,
 )
-from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
+from src.common.config import (
+    INFLUXDB_HOST,
+    INFLUXDB_PORT,
+    INFLUXDB_TIMEOUT,
+    TELEGRAM_CHAT_ID,
+    TELEGRAM_TOKEN,
+)
 from src.common.functions import generate_grafana_yaml
 from src.common.task_manager import TaskManager
 
@@ -26,7 +32,11 @@ client = InfluxdbOperation(
 # Instanciar manejador de logs
 logging_handler = LoggingHandler()
 stream = logging_handler.create_stream_handler()
-logger = logging_handler.add_handlers([stream])
+telegram = logging_handler.create_telegram_handler(
+    token=TELEGRAM_TOKEN,
+    chat_id=TELEGRAM_CHAT_ID,
+)
+logger = logging_handler.add_handlers([stream, telegram])
 
 # Instanciar manejador de tareas
 task_manager = TaskManager(
