@@ -39,9 +39,11 @@ POSTGRES_PORT=5435
 
 # API Key de Grafcan
 GRAFCAN_TOKEN=YOUR_API_KEY
+# API Key de AEMET
+AEMET_TOKEN=YOUR_API_KEY
 ```
 
-> 🔑 **Nota**: Reemplaza `YOUR_API_KEY` con tu clave de acceso a la API de Grafcan la cual es necesaria solicitar.
+> 🔑 **Nota**: Reemplaza `YOUR_API_KEY` con tu clave de acceso a la API la cual es necesaria solicitar.
 
 ### 3. Despliegue del contenedor
 Una vez configurado el archivo `.env`, sigue estos pasos:
