@@ -6,3 +6,9 @@ datasources:
     url: http://climacan-influxdb:$INFLUXDB_PORT
     database: grafcan
     editable: false
+  - name: grafcan_tasks
+    type: influxdb
+    access: proxy
+    url: http://climacan-influxdb:$INFLUXDB_PORT
+    database: grafcan_tasks
+    editable: false
