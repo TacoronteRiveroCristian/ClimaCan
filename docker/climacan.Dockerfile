@@ -1,10 +1,8 @@
 # Usa una imagen ligera basada en Python
 FROM python:3.12-slim
 
-# Configurar la zona horaria de Canarias
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 # Establecer directorio de trabajo
+ENV PYTHONPATH=/workspaces/climacan
 WORKDIR /workspaces/climacan
 
 # Actualizar el sistema e instalar dependencias necesarias

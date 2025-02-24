@@ -10,7 +10,9 @@ services:
       - .env
     environment:
       - WORKDIR=/workspaces/climacan
-    command: sleep infinity
+      - TZ=Atlantic/Canary
+    command: /bin/bash /workspaces/climacan/run.sh
+    # command: sleep infinity
     restart: unless-stopped
     networks:
       - climacan_network
