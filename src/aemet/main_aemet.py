@@ -114,7 +114,7 @@ if __name__ == "__main__":
     run_get_conventional_observations()
     scheduler.add_job(
         run_get_conventional_observations,
-        CronTrigger.from_crontab("0 * * * *"),
+        CronTrigger.from_crontab("2 * * * *"),
         name="Daily Get Conventional Observations Task",
     )
 
