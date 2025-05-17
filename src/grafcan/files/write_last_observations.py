@@ -11,9 +11,9 @@ from ctrutils.database.influxdb.InfluxdbOperation import InfluxdbOperation
 from ctrutils.handler.logging.logging_handler import LoggingHandler
 
 from src.common.config import INFLUXDB_HOST, INFLUXDB_PORT, INFLUXDB_TIMEOUT
-from src.common.functions import normalize_text
 from src.grafcan.classes.exceptions import DataFetchError
 from src.grafcan.classes.fetch_observations_last import FetchObservationsLast
+from src.grafcan.classes.utils import normalize_variable_name
 from src.grafcan.config.config import CSV_FILE_CLASSES_METADATA_STATIONS, TOKEN
 
 # Configurar logger
@@ -68,14 +68,7 @@ def normalize_measurement(text: str) -> str:
     :return: Texto normalizado.
     :rtype: str
     """
-    text = normalize_text(text)
-    return (
-        text.replace(" ", "_")
-        .replace(",", "")
-        .lower()
-        .replace("(", "")
-        .replace(")", "")
-    )
+    return normalize_variable_name(text)
 
 
 def add_features_to_points(
