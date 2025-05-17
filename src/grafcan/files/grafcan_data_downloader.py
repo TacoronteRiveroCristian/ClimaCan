@@ -23,30 +23,30 @@ Usage Examples:
 1. List all available variables for a specific Thing ID (e.g., 30):
    ----------------------------------------------------------------
    export GRAFCAN_TOKEN="your_api_key_here"
-   python historical_data_script.py 30 --list-variables
+   python grafcan_data_downloader.py 30 --list-variables
 
 2. Extract data for ALL variables for Thing ID 30 from Jan 1, 2023, to Jan 31, 2023:
    (Output will be in 'grafcan_data_output/30/2023/01/')
    ------------------------------------------------------------------------------------
    export GRAFCAN_TOKEN="your_api_key_here"
-   python historical_data_script.py 30 2023-01-01 2023-01-31
+   python grafcan_data_downloader.py 30 2023-01-01 2023-01-31
 
 3. Extract data for a SPECIFIC variable (e.g., "Temperatura del Aire" or its ID)
    for Thing ID 30 from Feb 1, 2023, to Feb 28, 2023, into a custom output directory:
    ------------------------------------------------------------------------------------
    export GRAFCAN_TOKEN="your_api_key_here"
-   python historical_data_script.py 30 2023-02-01 2023-02-28 --variable "Temperatura del Aire" --output_dir "my_custom_data"
+   python grafcan_data_downloader.py 30 2023-02-01 2023-02-28 --variable "Temperatura del Aire" --output_dir "my_custom_data"
 
 4. Extract data for a specific variable using its ID (e.g., Datastream ID 123)
    for Thing ID 30 from March 1, 2023, to March 15, 2023:
    ------------------------------------------------------------------------------------
    export GRAFCAN_TOKEN="your_api_key_here"
-   python historical_data_script.py 30 2023-03-01 2023-03-15 --variable 123
+   python grafcan_data_downloader.py 30 2023-03-01 2023-03-15 --variable 123
 
 5. Force re-download and overwrite existing data for a specific variable:
    ------------------------------------------------------------------------------------
    export GRAFCAN_TOKEN="your_api_key_here"
-   python historical_data_script.py 30 2023-01-01 2023-01-31 --variable 2152 --force
+   python grafcan_data_downloader.py 30 2023-01-01 2023-01-31 --variable 2152 --force
 
 Command-line Arguments:
   thing_id              Thing ID for the station.
@@ -63,20 +63,25 @@ Command-line Arguments:
                         Only used if not --list-variables.
   --page_size PAGE_SIZE Page size for API observation requests. Default: 1000.
                         Only used if not --list-variables.
-  --force               Force overwrite of existing files. If present, re-downloads data even if output files exist.
+  --force               Force overwrite of existing files. If this flag is present,
+                        the script will re-download and save data even if the
+                        output JSON file for a given month and variable already exists.
                         Default: False.
 """
-
-# /usr/local/bin/python
 
 import argparse
 import json
 import logging
+
+# /usr/local/bin/python
+#
 import os
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
+# /usr/local/bin/python
+#
 import pandas as pd
 import requests
 
@@ -391,7 +396,7 @@ def main():
             continue
 
         logger.info(
-            f"\nProcessing data for month: {current_month_start.strftime('%Y-%m')}"
+            f"\\nProcessing data for month: {current_month_start.strftime('%Y-%m')}"
         )
 
         for ds in datastreams_to_process:
@@ -475,7 +480,7 @@ def main():
                 current_month_start.year, current_month_start.month + 1, 1
             )
 
-    logger.info("\nData extraction process finished.")
+    logger.info("\\nData extraction process finished.")
 
 
 if __name__ == "__main__":
