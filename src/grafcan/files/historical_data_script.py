@@ -1,3 +1,5 @@
+# /usr/local/bin/python
+
 import argparse
 import json
 import logging
@@ -142,34 +144,45 @@ def main():
     )
 
     parser = argparse.ArgumentParser(
-        description="Extract historical data from Grafcan API."
+        description="Extract historical data from Grafcan API or list available variables for a Thing."
     )
     parser.add_argument("thing_id", type=int, help="Thing ID for the station.")
     parser.add_argument(
-        "start_date",
-        type=str,
-        help="Start date for data extraction (YYYY-MM-DD).",
+        "--list-variables",
+        action="store_true",
+        help="List all available variables (Datastreams) for the given Thing ID and exit.",
     )
     parser.add_argument(
-        "end_date", type=str, help="End date for data extraction (YYYY-MM-DD)."
+        "start_date",
+        type=str,
+        nargs="?",  # Make optional
+        default=None,  # Default to None
+        help="Start date for data extraction (YYYY-MM-DD). Required if not using --list-variables.",
+    )
+    parser.add_argument(
+        "end_date",
+        type=str,
+        nargs="?",  # Make optional
+        default=None,  # Default to None
+        help="End date for data extraction (YYYY-MM-DD). Required if not using --list-variables.",
     )
     parser.add_argument(
         "--variable",
         type=str,
         default="ALL",
-        help="Specific variable name or ID to fetch, or 'ALL' for all variables (default).",
+        help="Specific variable name or ID to fetch, or 'ALL' for all variables (default). Only used if not --list-variables.",
     )
     parser.add_argument(
         "--output_dir",
         type=str,
         default="grafcan_data_output",
-        help="Base directory to save the output JSON files.",
+        help="Base directory to save the output JSON files. Only used if not --list-variables.",
     )
     parser.add_argument(
         "--page_size",
         type=int,
         default=1000,
-        help="Page size for API observation requests.",
+        help="Page size for API observation requests. Only used if not --list-variables.",
     )
 
     args = parser.parse_args()
@@ -179,6 +192,29 @@ def main():
         "accept": "application/json",
         "Authorization": f"Api-Key {api_key}",
     }
+
+    if args.list_variables:
+        logger.info(f"Listing variables for Thing ID: {args.thing_id}")
+        available_datastreams = get_all_datastreams_for_thing(
+            args.thing_id, headers
+        )
+        if available_datastreams:
+            logger.info(
+                f"Available variables (Datastreams) for Thing ID {args.thing_id}:"
+            )
+            for ds in available_datastreams:
+                logger.info(
+                    f"  Name: {ds.get('name', 'N/A')}, ID: {ds.get('id', 'N/A')}, Description: {ds.get('description', 'N/A')}"
+                )
+        else:
+            logger.info(f"No variables found for Thing ID: {args.thing_id}.")
+        return  # Exit after listing variables
+
+    # If not --list-variables, then start_date and end_date are required
+    if not args.start_date or not args.end_date:
+        parser.error(
+            "the following arguments are required when not using --list-variables: start_date, end_date"
+        )
 
     try:
         start_datetime = datetime.strptime(args.start_date, "%Y-%m-%d")
@@ -205,14 +241,13 @@ def main():
     datastreams_to_process = []
     if args.variable.upper() == "ALL":
         datastreams_to_process = available_datastreams
+        # We don't need to print all variables again if they just listed them
+        # and then decided to download all. But if they directly chose ALL, it's good to list.
+        # However, the get_all_datastreams_for_thing already logs this.
+        # Let's only log the "Starting data extraction..."
         logger.info(
-            f"\nAvailable variables (Datastreams) for Thing ID {args.thing_id}:"
+            f"Starting data extraction for all variables for Thing ID {args.thing_id}..."
         )
-        for ds in available_datastreams:
-            logger.info(
-                f"  Name: {ds.get('name', 'N/A')}, ID: {ds.get('id', 'N/A')}, Description: {ds.get('description', 'N/A')}"
-            )
-        logger.info("\nStarting data extraction for all variables...")
     else:
         selected_ds = find_datastream(available_datastreams, args.variable)
         if selected_ds:
@@ -224,7 +259,9 @@ def main():
             logger.error(
                 f"Variable '{args.variable}' not found for Thing ID {args.thing_id}."
             )
-            logger.info("Available variables are:")
+            logger.info(
+                "Available variables are (run with --list-variables for more detail):"
+            )
             for ds in available_datastreams:
                 logger.info(
                     f"  Name: {ds.get('name', 'N/A')}, ID: {ds.get('id', 'N/A')}"
