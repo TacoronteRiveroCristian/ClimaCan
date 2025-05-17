@@ -1,3 +1,72 @@
+"""
+Extracts historical sensor data from the Grafcan API.
+
+This script allows users to:
+1. List all available variables (Datastreams) for a given Grafcan Thing ID.
+2. Download historical observation data for specified variables, time ranges, and Thing IDs.
+
+Data is fetched month by month for the specified period and saved into JSON files.
+The output directory structure is: <output_dir>/<thing_id>/<year>/<month>/<variable_name>.json
+
+By default, if an output file for a specific variable and month already exists,
+the script will skip re-downloading that data. This behavior can be overridden
+using the --force flag.
+
+Prerequisites:
+- Python 3.x
+- pandas library (`pip install pandas`)
+- requests library (`pip install requests`)
+- GRAFCAN_TOKEN environment variable set with your API key.
+
+Usage Examples:
+
+1. List all available variables for a specific Thing ID (e.g., 30):
+   ----------------------------------------------------------------
+   export GRAFCAN_TOKEN="your_api_key_here"
+   python historical_data_script.py 30 --list-variables
+
+2. Extract data for ALL variables for Thing ID 30 from Jan 1, 2023, to Jan 31, 2023:
+   (Output will be in 'grafcan_data_output/30/2023/01/')
+   ------------------------------------------------------------------------------------
+   export GRAFCAN_TOKEN="your_api_key_here"
+   python historical_data_script.py 30 2023-01-01 2023-01-31
+
+3. Extract data for a SPECIFIC variable (e.g., "Temperatura del Aire" or its ID)
+   for Thing ID 30 from Feb 1, 2023, to Feb 28, 2023, into a custom output directory:
+   ------------------------------------------------------------------------------------
+   export GRAFCAN_TOKEN="your_api_key_here"
+   python historical_data_script.py 30 2023-02-01 2023-02-28 --variable "Temperatura del Aire" --output_dir "my_custom_data"
+
+4. Extract data for a specific variable using its ID (e.g., Datastream ID 123)
+   for Thing ID 30 from March 1, 2023, to March 15, 2023:
+   ------------------------------------------------------------------------------------
+   export GRAFCAN_TOKEN="your_api_key_here"
+   python historical_data_script.py 30 2023-03-01 2023-03-15 --variable 123
+
+5. Force re-download and overwrite existing data for a specific variable:
+   ------------------------------------------------------------------------------------
+   export GRAFCAN_TOKEN="your_api_key_here"
+   python historical_data_script.py 30 2023-01-01 2023-01-31 --variable 2152 --force
+
+Command-line Arguments:
+  thing_id              Thing ID for the station.
+  start_date            Start date for data extraction (YYYY-MM-DD).
+                        Required if not using --list-variables.
+  end_date              End date for data extraction (YYYY-MM-DD).
+                        Required if not using --list-variables.
+  --list-variables      List all available variables for the given Thing ID and exit.
+  --variable VARIABLE   Specific variable name or ID to fetch, or 'ALL' for all
+                        variables (default). Only used if not --list-variables.
+  --output_dir OUTPUT_DIR
+                        Base directory to save the output JSON files.
+                        Default: 'grafcan_data_output'.
+                        Only used if not --list-variables.
+  --page_size PAGE_SIZE Page size for API observation requests. Default: 1000.
+                        Only used if not --list-variables.
+  --force               Force overwrite of existing files. If present, re-downloads data even if output files exist.
+                        Default: False.
+"""
+
 # /usr/local/bin/python
 
 import argparse
@@ -184,6 +253,11 @@ def main():
         default=1000,
         help="Page size for API observation requests. Only used if not --list-variables.",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force overwrite of existing files. If present, re-downloads data even if output files exist.",
+    )
 
     args = parser.parse_args()
 
@@ -329,6 +403,29 @@ def main():
                 logger.warning(f"Skipping datastream without ID: {ds_name}")
                 continue
 
+            # Determine output path and filename for the current month and variable
+            output_path_for_month = (
+                base_output_path
+                / str(args.thing_id)
+                / str(current_month_start.year)
+                / f"{current_month_start.month:02d}"
+            )
+            file_path_for_month = (
+                output_path_for_month / f"{sanitized_ds_name}.json"
+            )
+
+            # Check if file already exists and --force is not used
+            if not args.force and file_path_for_month.exists():
+                logger.info(
+                    f"    Data for {ds_name} (ID: {ds_id}) for month {current_month_start.strftime('%Y-%m')} already exists at {file_path_for_month}. Skipping (use --force to overwrite)."
+                )
+                logger.info("-" * 30)
+                continue  # Skip to the next datastream or month
+            elif args.force and file_path_for_month.exists():
+                logger.info(
+                    f"    --force specified. Overwriting existing file for {ds_name} (ID: {ds_id}) for month {current_month_start.strftime('%Y-%m')} at {file_path_for_month}."
+                )
+
             logger.info(f"  Processing variable: {ds_name} (ID: {ds_id})")
 
             # Format for API: YYYY-MM-DDTHH:MM:SSZ
@@ -342,23 +439,20 @@ def main():
             )
 
             if observations:
-                output_path = (
-                    base_output_path
-                    / str(args.thing_id)
-                    / str(current_month_start.year)
-                    / f"{current_month_start.month:02d}"
-                )
-                output_path.mkdir(parents=True, exist_ok=True)
-                file_path = output_path / f"{sanitized_ds_name}.json"
+                # Ensure directory exists (it might have been created by a previous variable in the same month)
+                output_path_for_month.mkdir(parents=True, exist_ok=True)
+                # file_path variable already defined as file_path_for_month
 
                 try:
-                    with open(file_path, "w") as f:
+                    with open(file_path_for_month, "w") as f:
                         json.dump(observations, f, indent=4)
                     logger.info(
-                        f"    Successfully saved {len(observations)} records to {file_path}"
+                        f"    Successfully saved {len(observations)} records to {file_path_for_month}"
                     )
                 except IOError as e:
-                    logger.error(f"    Error writing file {file_path}: {e}")
+                    logger.error(
+                        f"    Error writing file {file_path_for_month}: {e}"
+                    )
 
                 # Optional: Convert to DataFrame for quick check, can be removed for performance
                 # df = pd.DataFrame(observations)

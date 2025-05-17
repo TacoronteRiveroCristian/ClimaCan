@@ -1,3 +1,4 @@
+src/grafcan/files/grafcan_data_output/
 volumes/influxdb
 **/artifacts/*
 *.xlsx
