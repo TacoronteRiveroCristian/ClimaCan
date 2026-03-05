@@ -13,6 +13,7 @@ from src.common.config import (
     INFLUXDB_TIMEOUT,
     TELEGRAM_CHAT_ID,
     TELEGRAM_TOKEN,
+    wait_for_services,
 )
 from src.common.task_manager import TaskManager
 from src.grafcan.config.config import CSV_FILE_CLASSES_METADATA_STATIONS
@@ -81,6 +82,14 @@ def main() -> None:
     """
     Función principal del script que inicia la ejecucion de los procesos.
     """
+    # Esperar a que los servicios de base de datos esten disponibles
+    if not wait_for_services():
+        logger.critical(
+            "No se pudo conectar a los servicios requeridos. "
+            "El scheduler Grafcan no se iniciara."
+        )
+        return
+
     scheduler = BlockingScheduler(
         job_defaults={
             "coalesce": True,  # Combinar trabajos atrasados
@@ -135,7 +144,6 @@ def main() -> None:
         logger.critical(
             f"Error crítico en el scheduler Grafcan: {e}", exc_info=True
         )
-        raise
 
 
 if __name__ == "__main__":

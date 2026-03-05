@@ -18,6 +18,7 @@ from src.common.config import (
     INFLUXDB_TIMEOUT,
     TELEGRAM_CHAT_ID,
     TELEGRAM_TOKEN,
+    wait_for_services,
 )
 from src.common.functions import generate_grafana_yaml
 from src.common.task_manager import TaskManager
@@ -119,6 +120,14 @@ if __name__ == "__main__":
         }
     )
 
+    # Esperar a que los servicios de base de datos esten disponibles
+    if not wait_for_services():
+        logger.critical(
+            "No se pudo conectar a los servicios requeridos. "
+            "El scheduler AEMET no se iniciara."
+        )
+        exit(0)  # Salida limpia para no activar reintentos en run.sh
+
     # Ejecutar tareas iniciales de forma segura
     logger.info("Ejecutando tareas iniciales...")
     try:
@@ -175,4 +184,3 @@ if __name__ == "__main__":
         logger.critical(
             f"Error crítico en el scheduler AEMET: {e}", exc_info=True
         )
-        raise

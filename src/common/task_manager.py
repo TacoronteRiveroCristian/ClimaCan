@@ -65,7 +65,12 @@ class TaskManager:
                 self.logger.error(f"Tarea '{task_name}' fallida.")
         except Exception as e:
             self.logger.error(f"Error al ejecutar la tarea '{task_name}': {e}")
-            self._record_status(field, measurement, 0)
+            try:
+                self._record_status(field, measurement, 0)
+            except Exception as status_error:
+                self.logger.error(
+                    f"No se pudo registrar el estado de fallo: {status_error}"
+                )
 
     def _run_script(self, script_path: Union[Path, str]) -> bool:
         """
@@ -85,8 +90,14 @@ class TaskManager:
                 check=True,
                 capture_output=True,
                 text=True,
+                timeout=600,  # 10 minutos maximo por script
             )
             return True
+        except subprocess.TimeoutExpired:
+            self.logger.error(
+                f"Timeout: el script '{script_path}' excedio los 600 segundos."
+            )
+            return False
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Error en el script '{script_path}': {e.stderr}")
             return False
@@ -107,6 +118,6 @@ class TaskManager:
         try:
             self.client.write_points(points=[point], database=self.database)
         except Exception as e:
-            raise RuntimeError(
+            self.logger.error(
                 f"Error al registrar el estado en InfluxDB: {e}"
-            ) from e
+            )

@@ -14,6 +14,11 @@ services:
     command: /bin/bash /workspaces/climacan/run.sh
     # command: sleep infinity
     restart: unless-stopped
+    depends_on:
+      climacan-influxdb:
+        condition: service_healthy
+      climacan-postgres:
+        condition: service_healthy
     networks:
       - climacan_network
 
@@ -28,8 +33,12 @@ services:
     environment:
       - TZ=Atlantic/Canary
       - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT}
-    depends_on:
-      - climacan-dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${INFLUXDB_PORT}/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
     networks:
       - climacan_network
@@ -57,7 +66,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - PGPORT=${POSTGRES_PORT}
     depends_on:
-      - climacan-dev
+      climacan-influxdb:
+        condition: service_healthy
+      climacan-postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - climacan_network
@@ -75,6 +87,12 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - PGPORT=${POSTGRES_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -p ${POSTGRES_PORT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
     networks:
       - climacan_network
